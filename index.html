@@ -12,7 +12,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="墨爾本導覽">
 
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Leaflet Marker Cluster CSS (解決點位重疊問題) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <style>
         html, body { height: 100%; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background: #000; }
@@ -20,18 +25,18 @@
         
         /* 手機專屬 Popup 優化 */
         .leaflet-popup-content-wrapper { 
-            font-size: 14px; 
+            font-size: 13px; 
             border-radius: 16px; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
             width: 85vw; 
             max-width: 320px; 
-            max-height: 55vh; 
+            max-height: 50vh; 
             overflow-y: auto; 
             padding: 4px;
         }
         .popup-header { font-weight: bold; padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
         .day-badge { padding: 3px 8px; border-radius: 6px; color: white; font-size: 11px; font-weight: bold; }
-        .popup-body { margin-top: 5px; color: #333; line-height: 1.5; font-size: 13px; }
+        .popup-body { margin-top: 5px; color: #333; line-height: 1.5; font-size: 12px; }
         .popup-body p { margin: 6px 0; }
         
         /* 手機大觸控按鈕 (上一步 / 下一步) */
@@ -76,19 +81,25 @@
             margin-top: 2px; white-space: nowrap; font-weight: bold;
         }
 
-        /* 手機浮動圖例按鈕 */
+        /* 避開 iPhone 頂部安全區的浮動按鈕 */
         .legend-toggle {
-            position: absolute; top: 15px; right: 15px; z-index: 1000;
-            background: white; border: none; padding: 8px 12px;
-            border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: absolute; 
+            top: calc(env(safe-area-inset-top, 20px) + 15px); 
+            right: 15px; 
+            z-index: 1000;
+            background: white; border: none; padding: 10px 14px;
+            border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.25);
             font-weight: bold; font-size: 13px; color: #333; cursor: pointer;
             display: flex; align-items: center; gap: 6px;
         }
         .legend-panel {
-            position: absolute; top: 60px; right: 15px; z-index: 1000;
+            position: absolute; 
+            top: calc(env(safe-area-inset-top, 20px) + 65px); 
+            right: 15px; 
+            z-index: 1000;
             background: white; padding: 14px; border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-size: 12px;
-            max-height: 70vh; overflow-y: auto; width: 200px;
+            max-height: 65vh; overflow-y: auto; width: 200px;
             display: none;
         }
         .legend-panel.show { display: block; }
@@ -126,7 +137,11 @@
 
     <div id="map"></div>
     
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Leaflet Marker Cluster JS -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    
     <script>
         function toggleLegend() {
             var panel = document.getElementById('legendPanel');
@@ -140,6 +155,14 @@
             maxZoom: 19,
             attribution: '© CARTO'
         }).addTo(map);
+
+        // 建立叢集群組，自動把過近的標記收合
+        var markersCluster = L.markerClusterGroup({
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true
+        });
+        map.addLayer(markersCluster);
 
         var colors = {
             "Base": "#2c3e50", "Day 2": "#e74c3c", "Day 3": "#3498db",
@@ -203,8 +226,11 @@
         function openMarker(id) {
             if (markersMap[id]) {
                 var marker = markersMap[id];
-                map.flyTo(marker.getLatLng(), 14, {duration: 1.2});
-                marker.openPopup();
+                // 如果點位被收合在 Cluster 裡，先讓地圖展開該區域
+                markersCluster.zoomToShowLayer(marker, function() {
+                    map.flyTo(marker.getLatLng(), 15, {duration: 1.2});
+                    marker.openPopup();
+                });
             }
         }
 
@@ -219,7 +245,7 @@
                 iconSize: [36, 44], iconAnchor: [18, 22]
             });
 
-            var marker = L.marker([loc.lat, loc.lon], {icon: markerIcon}).addTo(map);
+            var marker = L.marker([loc.lat, loc.lon], {icon: markerIcon});
             markersMap[loc.id] = marker;
             
             var typeColor = "#333";
@@ -246,11 +272,13 @@
                 </div>
             `;
             marker.bindPopup(popupContent);
+            
+            // 將標記加入叢集系統中，解決重疊問題
+            markersCluster.addLayer(marker);
         });
 
-        var allMarkers = Object.values(markersMap);
-        var group = new L.featureGroup(allMarkers);
-        map.fitBounds(group.getBounds().pad(0.1));
+        // 自動對焦所有點位
+        map.fitBounds(markersCluster.getBounds().pad(0.1));
     </script>
 </body>
 </html>
