@@ -5,50 +5,60 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- 支援手機加入主畫面的自訂 App 圖示與全螢幕設定 -->
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="墨爾本導覽">
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <style>
         html, body { height: 100%; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background: #000; }
         #map { height: 100vh; width: 100vw; z-index: 1; }
         
-        /* 頂部動態行程儀表板 (Smart Dashboard) */
-        .smart-dashboard { position: absolute; top: 0; left: 0; right: 0; z-index: 2000; background: rgba(44, 62, 80, 0.92); color: white; padding: max(15px, env(safe-area-inset-top)) 15px 12px 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); backdrop-filter: blur(10px); cursor: pointer; transition: background 0.2s; }
-        .smart-dashboard:active { background: rgba(52, 73, 94, 0.95); }
+        /* 頂部動態行程儀表板 */
+        .smart-dashboard { position: absolute; top: 0; left: 0; right: 0; z-index: 2000; background: rgba(44, 62, 80, 0.95); color: white; padding: max(15px, env(safe-area-inset-top)) 15px 12px 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); backdrop-filter: blur(10px); cursor: pointer; transition: background 0.2s; }
+        .smart-dashboard:active { background: rgba(52, 73, 94, 0.98); }
         .dashboard-current { font-weight: bold; font-size: 15px; color: #f1c40f; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
         .dashboard-next { font-size: 12px; color: #ecf0f1; font-weight: 500; }
-        .dashboard-hint { font-size: 10px; color: #95a5a6; margin-top: 6px; }
+        .dashboard-hint { font-size: 10px; color: #95a5a6; margin-top: 6px; text-align: right; }
 
-        /* 手機專屬 Popup 優化 */
-        .leaflet-popup-content-wrapper { font-size: 13px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 85vw; max-width: 320px; max-height: 55vh; overflow-y: auto; padding: 6px; }
-        .popup-header { font-weight: bold; padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
-        .day-badge { padding: 3px 8px; border-radius: 6px; color: white; font-size: 11px; font-weight: bold; }
+        /* Popup 彈窗優化 */
+        .leaflet-popup-content-wrapper { font-size: 13px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 85vw; max-width: 320px; max-height: 60vh; overflow-y: auto; padding: 6px; }
+        .popup-header { font-weight: bold; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
+        .day-badge { padding: 4px 8px; border-radius: 6px; color: white; font-size: 11px; font-weight: bold; }
         .popup-body { margin-top: 5px; color: #333; line-height: 1.5; font-size: 12px; }
         .popup-body p { margin: 6px 0; }
         
-        /* 上一步 / 下一步 / 導航 按鈕 */
-        .tour-controls { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee; gap: 8px; }
-        .tour-btn { background-color: #2c3e50; color: white; border: none; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+        /* 內部控制與 Google 連結按鈕 */
+        .tour-controls { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee; gap: 8px; }
+        .tour-btn { background-color: #2c3e50; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
         .tour-btn:active { background-color: #1a252f; transform: scale(0.98); }
         
-        .nav-btn { background-color: #27ae60; color: white; text-decoration: none; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; box-sizing: border-box; margin-top: 8px; box-shadow: 0 3px 8px rgba(39, 174, 96, 0.4); }
-        .nav-btn:active { background-color: #219653; transform: scale(0.98); }
+        .action-links { display: flex; gap: 8px; margin-top: 8px; }
+        .nav-btn { color: white; text-decoration: none; padding: 12px 10px; border-radius: 8px; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1; box-sizing: border-box; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); }
+        .map-view-btn { background-color: #3498db; }
+        .map-view-btn:active { background-color: #2980b9; transform: scale(0.98); }
+        .nav-dir-btn { background-color: #27ae60; }
+        .nav-dir-btn:active { background-color: #219653; transform: scale(0.98); }
 
-        /* 地圖標記 */
+        /* 標記樣式 */
         .numbered-marker-container { display: flex; flex-direction: column; align-items: center; }
         .numbered-marker { display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 3px 8px rgba(0,0,0,0.4); color: white; font-weight: bold; font-size: 12px; width: 26px; height: 26px; }
-        .marker-label { background: rgba(0, 0, 0, 0.85); color: white; padding: 1px 5px; font-size: 9px; border-radius: 4px; margin-top: 2px; white-space: nowrap; font-weight: bold; }
+        .marker-label { background: rgba(0, 0, 0, 0.85); color: white; padding: 2px 6px; font-size: 10px; border-radius: 4px; margin-top: 2px; white-space: nowrap; font-weight: bold; }
 
-        /* 控制按鈕位置下移 (避開儀表板) */
+        /* 動態真實道路路線 (流動特效) */
+        .route-line { stroke-dasharray: 12, 12; animation: routeFlow 1s linear infinite; pointer-events: none; filter: drop-shadow(0px 2px 4px rgba(231, 76, 60, 0.5)); }
+        @keyframes routeFlow { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+
+        /* 動態車程時間標籤 (Tooltip) */
+        .route-tooltip { background: rgba(44, 62, 80, 0.95); color: #f1c40f; border: 1px solid #34495e; border-radius: 20px; padding: 6px 12px; font-weight: bold; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); backdrop-filter: blur(5px); }
+        .route-tooltip::before { display: none; }
+
+        /* 浮動按鈕群 */
         .top-right-btns { position: absolute; top: calc(env(safe-area-inset-top, 20px) + 90px); right: 15px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
-        .floating-btn { background: white; border: none; padding: 10px 12px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); font-weight: bold; font-size: 12px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .floating-btn { background: white; border: none; padding: 12px 14px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); font-weight: bold; font-size: 13px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
         .left-floating-btns { position: absolute; top: calc(env(safe-area-inset-top, 20px) + 90px); left: 10px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
         .action-btn { background: white; border: none; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3); color: #333; cursor: pointer; font-size: 16px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; transition: all 0.2s; }
@@ -56,67 +66,64 @@
         .action-btn.rocket { background: #e74c3c; color: white; }
 
         /* 圖例面板與側邊欄 */
-        .legend-panel { position: absolute; top: calc(env(safe-area-inset-top, 20px) + 135px); right: 15px; z-index: 1000; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-size: 11px; max-height: 50vh; overflow-y: auto; width: 180px; display: none; }
+        .legend-panel { position: absolute; top: calc(env(safe-area-inset-top, 20px) + 140px); right: 15px; z-index: 1000; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-size: 12px; max-height: 50vh; overflow-y: auto; width: 180px; display: none; line-height: 1.5; }
         .legend-panel.show { display: block; }
-        .legend-panel h4 { margin: 0 0 6px 0; font-size: 12px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
-        .color-box { width: 10px; height: 10px; display: inline-block; margin-right: 6px; border-radius: 3px; vertical-align: middle; }
-        .icon-box { display: inline-block; width: 14px; text-align: center; margin-right: 4px; color: #555; }
+        .legend-panel h4 { margin: 0 0 8px 0; font-size: 13px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+        .color-box { width: 12px; height: 12px; display: inline-block; margin-right: 6px; border-radius: 3px; vertical-align: middle; }
+        .icon-box { display: inline-block; width: 16px; text-align: center; margin-right: 4px; color: #555; }
 
         .sidebar { position: absolute; top: 0; right: -320px; width: 300px; height: 100vh; background: #1e1e1e; color: #fff; z-index: 3000; box-shadow: -5px 0 25px rgba(0,0,0,0.5); transition: right 0.3s ease-in-out; display: flex; flex-direction: column; }
         .sidebar.open { right: 0; }
-        .sidebar-header { padding: max(15px, env(safe-area-inset-top)) 20px 15px; background: #2c2c2c; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3d3d3d; font-weight: bold; font-size: 15px; }
-        .sidebar-close { background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; }
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 80px; }
-        .sidebar-day-title { font-size: 13px; font-weight: bold; color: #3498db; margin: 12px 5px 6px 5px; text-transform: uppercase; }
-        .sidebar-item { background: #2a2a2a; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; cursor: pointer; border-left: 4px solid #3498db; transition: background 0.2s; }
-        .sidebar-item-time { font-size: 11px; color: #e67e22; font-weight: bold; margin-bottom: 2px; }
-        .sidebar-item-name { font-size: 13px; font-weight: bold; color: #fff; }
-        .sidebar-item-desc { font-size: 11px; color: #aaa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-header { padding: max(15px, env(safe-area-inset-top)) 20px 15px; background: #2c2c2c; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3d3d3d; font-weight: bold; font-size: 16px; }
+        .sidebar-close { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; padding: 5px; }
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 90px; }
+        .sidebar-day-title { font-size: 14px; font-weight: bold; color: #3498db; margin: 15px 5px 8px 5px; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 4px; }
+        .sidebar-item { background: #2a2a2a; padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid #3498db; transition: background 0.2s; }
+        .sidebar-item:active { background: #353535; }
+        .sidebar-item-time { font-size: 12px; color: #e67e22; font-weight: bold; margin-bottom: 4px; }
+        .sidebar-item-name { font-size: 14px; font-weight: bold; color: #fff; line-height: 1.4; }
+        .sidebar-item-desc { font-size: 12px; color: #aaa; margin-top: 4px; line-height: 1.3; }
 
         /* 底部智慧行程快速切換列 */
-        .day-bar { position: absolute; bottom: calc(env(safe-area-inset-bottom, 10px) + 15px); left: 10px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 8px 10px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); display: flex; overflow-x: auto; gap: 6px; scrollbar-width: none; }
+        .day-bar { position: absolute; bottom: calc(env(safe-area-inset-bottom, 10px) + 15px); left: 10px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 10px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); display: flex; overflow-x: auto; gap: 8px; scrollbar-width: none; }
         .day-bar::-webkit-scrollbar { display: none; }
-        .day-tab { background: #f1f2f6; border: none; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; color: #333; white-space: nowrap; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .day-tab { background: #f1f2f6; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: bold; color: #333; white-space: nowrap; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; }
         .day-tab.active { background: #2c3e50; color: white; }
         .day-tab.food-wishlist { background: #ffeaa7; color: #d35400; border: 1px solid #f1c40f; }
         .day-tab.food-wishlist.active { background: #e84393; color: white; border: 1px solid #e84393; }
     </style>
 </head>
 <body>
-    <!-- 頂部智慧儀表板 -->
     <div class="smart-dashboard" onclick="jumpToCurrentStop(true)">
         <div class="dashboard-current" id="dashCurrent"><i class="fas fa-spinner fa-spin"></i> 同步行程中...</div>
-        <div class="dashboard-next" id="dashNext">正在讀取您當下時間</div>
-        <div class="dashboard-hint"><i class="fas fa-hand-pointer"></i> 點擊此處自動鎖定您目前的行程點</div>
+        <div class="dashboard-next" id="dashNext">正在載入即時導航引擎</div>
+        <div class="dashboard-hint"><i class="fas fa-crosshairs"></i> 點擊此處追蹤目前行程與路線</div>
     </div>
 
-    <!-- 右上角控制 -->
     <div class="top-right-btns">
-        <button class="floating-btn" onclick="toggleSidebar()"><i class="fas fa-list-ul"></i> 列表</button>
-        <button class="floating-btn" onclick="toggleLegend()"><i class="fas fa-map-signs"></i> 圖例</button>
+        <button class="floating-btn" onclick="toggleSidebar()"><i class="fas fa-list-ul"></i> 行程列表</button>
+        <button class="floating-btn" onclick="toggleLegend()"><i class="fas fa-map-signs"></i> 圖例說明</button>
     </div>
 
-    <!-- 左側快速操作功能 -->
     <div class="left-floating-btns">
         <button class="action-btn gps" id="gpsBtn" onclick="toggleLiveTracking()" title="連續追蹤位置"><i class="fas fa-crosshairs"></i></button>
         <button class="action-btn" id="mapToggleBtn" onclick="toggleMapType()" title="切換地圖模式"><i class="fas fa-satellite"></i></button>
         <button class="action-btn rocket" onclick="jumpToCurrentStop(false)" title="跳至目前行程"><i class="fas fa-rocket"></i></button>
     </div>
     
-    <!-- 圖例面板 -->
     <div id="legendPanel" class="legend-panel">
-        <div style="margin-bottom: 8px;">
-            <h4>📌 符號</h4>
+        <div style="margin-bottom: 12px;">
+            <h4>📌 符號對應</h4>
             <span class="icon-box" style="color: #e84393;"><i class="fas fa-star"></i></span> 備選美食清單<br>
-            <span class="icon-box"><i class="fas fa-bed"></i></span> 住宿<br>
-            <span class="icon-box"><i class="fas fa-camera"></i></span> 景點<br>
+            <span class="icon-box"><i class="fas fa-house"></i></span> 住宿地點<br>
+            <span class="icon-box"><i class="fas fa-camera"></i></span> 觀光景點<br>
             <span class="icon-box"><i class="fas fa-utensils"></i></span> 行程餐廳<br>
-            <span class="icon-box"><i class="fas fa-car"></i></span> 交通<br>
+            <span class="icon-box"><i class="fas fa-car"></i></span> 交通/機場<br>
         </div>
         <div>
             <h4>🗓️ 天數顏色</h4>
             <i class="color-box" style="background: #e84393"></i> 備選口袋美食<br>
-            <i class="color-box" style="background: #2c3e50"></i> Base<br>
+            <i class="color-box" style="background: #2c3e50"></i> Base (機場)<br>
             <i class="color-box" style="background: #e74c3c"></i> Day 2 (亞拉)<br>
             <i class="color-box" style="background: #3498db"></i> Day 3 (菲利浦)<br>
             <i class="color-box" style="background: #2ecc71"></i> Day 4 (莫寧頓)<br>
@@ -128,16 +135,14 @@
         </div>
     </div>
 
-    <!-- 側邊欄 -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <span>🗺️ 行程總覽 & 美食清單</span>
+            <span>🗺️ 行程總覽 & 美食</span>
             <button class="sidebar-close" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
         <div class="sidebar-content" id="sidebarList"></div>
     </div>
 
-    <!-- 底部天數切換 -->
     <div class="day-bar" id="dayBar">
         <button class="day-tab active" onclick="jumpToDay('Base', this)">起終點</button>
         <button class="day-tab" onclick="jumpToDay('Day 2', this)">Day 2</button>
@@ -155,8 +160,7 @@
 
     <div id="map"></div>
     
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     
     <script>
         function toggleLegend() {
@@ -174,7 +178,6 @@
         var map = L.map('map', {zoomControl: false}).setView([-38.2, 144.5], 8);
         L.control.zoom({position: 'topleft'}).addTo(map);
 
-        // 圖層設定 (預設 Roadmap)
         var googleHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 20, attribution: '© Google Earth' });
         var googleRoadmap = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20, attribution: '© Google Maps' });
         googleRoadmap.addTo(map);
@@ -194,7 +197,6 @@
             }
         }
 
-        // Live Tracking 連續定位功能
         var userMarker = null;
         var isTracking = false;
         
@@ -224,12 +226,6 @@
                 userMarker.setLatLng(e.latlng);
             }
         });
-        map.on('locationerror', function(e) {
-            if(isTracking) {
-                alert("無法取得即時位置，請確認手機位置權限是否開啟！");
-                toggleLiveTracking();
-            }
-        });
 
         var colors = {
             "Base": "#2c3e50", "Day 2": "#e74c3c", "Day 3": "#3498db", "Day 4": "#2ecc71", "Day 5": "#1abc9c", 
@@ -238,7 +234,7 @@
         };
 
         var locations = [
-            // Base ~ Day 11 行程
+            // --- 原始 11 天行程 ---
             {id: 0, day: "Base", seq: "1", name: "桃園機場 / 墨爾本機場", type: "交通", time: "9/24 23:30", desc: "夜間直飛班機，最高效率串接假期。", lat: -37.6690, lon: 144.8410},
             {id: 1, day: "Day 2", seq: "1", name: "Hertz 機場租車", type: "交通", time: "9/25 11:30", desc: "完成租車，啟程亞拉河谷。", lat: -37.6700, lon: 144.8500},
             {id: 2, day: "Day 2", seq: "2", name: "Domaine Chandon 酒莊", type: "景點", time: "9/25 12:30", desc: "LVMH集團頂級氣泡酒莊。", lat: -37.7188, lon: 145.4052},
@@ -252,7 +248,7 @@
             {id: 10, day: "Day 4", seq: "1", name: "亞瑟王座鷹纜車", type: "景點", time: "9/27 09:00", desc: "樹冠纜車鳥瞰海灣。", lat: -38.3530, lon: 144.9540},
             {id: 11, day: "Day 4", seq: "2", name: "Ashcombe 迷宮花園", type: "景點", time: "9/27 10:30", desc: "傳統樹籬迷宮與玫瑰花園。", lat: -38.3600, lon: 144.9100},
             {id: 12, day: "Day 4", seq: "3", name: "The Epicurean Red Hill", type: "餐廳", time: "9/27 12:00", desc: "工業風義式窯烤餐廳。", lat: -38.3685, lon: 145.0205},
-            {id: 13, day: "Day 4", seq: "4", name: "月光保護區", type: "景點", time: "9/27 14:00", desc: "親手餵食袋鼠。", lat: -38.2045, lon: 145.2530},
+            {id: 13, day: "Day 4", seq: "4", name: "月光保護區", type: "景點", time: "9/27 14:00", desc: "親手餵袋鼠。", lat: -38.2045, lon: 145.2530},
             {id: 14, day: "Day 4", seq: "5", name: "巧克力工廠", type: "景點", time: "9/27 15:30", desc: "參觀奇妙製程品嚐巧克力。", lat: -38.4800, lon: 145.1800},
             {id: 15, day: "Day 4", seq: "6", name: "無尾熊保育中心", type: "景點", time: "9/27 16:30", desc: "木棧道平視無尾熊。", lat: -38.4900, lon: 145.2200},
             {id: 16, day: "Day 4", seq: "7", name: "企鵝歸巢", type: "景點", time: "9/27 17:30", desc: "夏藍海灘看神仙企鵝返巢。", lat: -38.5080, lon: 145.1480},
@@ -275,7 +271,7 @@
             {id: 33, day: "Day 9", seq: "1", name: "咖啡一條街", type: "餐廳", time: "10/2 09:00", desc: "品嚐世界頂尖 Flat White。", lat: -37.8150, lon: 144.9650},
             {id: 34, day: "Day 9", seq: "2", name: "費蓮達火車站", type: "景點", time: "10/2 10:00", desc: "最古老城市火車站地標。", lat: -37.8183, lon: 144.9671},
             {id: 35, day: "Day 9", seq: "3", name: "維多利亞州立圖書館", type: "景點", time: "10/2 11:00", desc: "八角形穹頂閱覽室。", lat: -37.8105, lon: 144.9646},
-            {id: 36, day: "Day 9", seq: "4", name: "墨爾本動物園", type: "景點", time: "10/2 13:30", desc: "最悠久的經典動物園。", lat: -37.7841, lon: 144.9515},
+            {id: 36, day: "Day 9", seq: "4", name: "墨珠動物園", type: "景點", time: "10/2 13:30", desc: "最悠久的經典動物園。", lat: -37.7841, lon: 144.9515},
             {id: 37, day: "Day 9", seq: "5", name: "DFO & Emporium", type: "購物", time: "10/2 16:00", desc: "市區潮流與精品購物。", lat: -37.8225, lon: 144.9540},
             {id: 38, day: "Day 10", seq: "1", name: "維多利亞市場", type: "景點", time: "10/3 09:30", desc: "南半球最大露天市場。", lat: -37.8076, lon: 144.9568},
             {id: 39, day: "Day 10", seq: "2", name: "皇家展覽館", type: "景點", time: "10/3 11:00", desc: "世界文化遺產建築。", lat: -37.8044, lon: 144.9715},
@@ -288,19 +284,41 @@
             {id: 46, day: "Day 11", seq: "4", name: "布洛克拱廊", type: "景點", time: "10/4 14:30", desc: "仿米蘭拱廊的奢華馬賽克長廊。", lat: -37.8143, lon: 144.9650},
             {id: 47, day: "Day 11", seq: "5", name: "墨爾本機場 / 賦歸", type: "交通", time: "10/4 21:50", desc: "搭乘直飛班機返回台灣。", lat: -37.6690, lon: 144.8410},
 
-            // 備選美食清單
-            {id: 48, day: "備選美食", seq: "★", name: "HEEBI", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：早午餐與精品咖啡<br><b>✨ 特色</b>：結合亞洲風味的創意西式料理。<br><b>⭐ 評分</b>：4.7 (522則) · Carlton", lat: -37.8028, lon: 144.9638},
-            {id: 49, day: "備選美食", seq: "★", name: "The Mazu Cafe", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：台式/亞洲風味咖啡廳<br><b>✨ 特色</b>：提供懷念的台式小吃與簡餐。<br><b>⭐ 評分</b>：4.4 (812則) · Balwyn", lat: -37.8105, lon: 145.0802},
-            {id: 50, day: "備選美食", seq: "★", name: "Pho Thin Australia", type: "備選美食", time: "黃明志推薦", desc: "<b>🍽️ 餐點</b>：北越風格越南河粉<br><b>✨ 特色</b>：黃明志大推！主打北越河內的蔥爆牛肉河粉。<br><b>⭐ 評分</b>：4.1 (1905則) · CBD", lat: -37.8125, lon: 144.9602},
-            {id: 51, day: "備選美食", seq: "★", name: "Yuk Gam", type: "備選美食", time: "黃明志推薦", desc: "<b>🍽️ 餐點</b>：韓式烤肉與酒館<br><b>✨ 特色</b>：高人氣道地韓式烤肉，適合多人聚餐。<br><b>⭐ 評分</b>：4.8 (2580則) · CBD", lat: -37.8118, lon: 144.9635},
-            {id: 52, day: "備選美食", seq: "★", name: "Tian38", type: "備選美食", time: "黃明志推薦", desc: "<b>🍽️ 餐點</b>：現代中式/星馬料理<br><b>✨ 特色</b>：將傳統中式與星馬風味融合的摩登餐酒館。<br><b>⭐ 評分</b>：4.4 (1278則) · CBD", lat: -37.8182, lon: 144.9622},
-            {id: 53, day: "備選美食", seq: "★", name: "Higher Ground", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：摩登澳式早午餐<br><b>✨ 特色</b>：舊發電廠改建打卡名店，必點招牌熱蛋糕。<br><b>⭐ 評分</b>：4.1 (6154則) · 南十字星旁", lat: -37.8159, lon: 144.9542},
-            {id: 54, day: "備選美食", seq: "★", name: "Foglia di Fico", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：正宗義大利料理<br><b>✨ 特色</b>：手工義大利麵與傳統義式燉肉。<br><b>⭐ 評分</b>：4.7 (869則) · CBD", lat: -37.8131, lon: 144.9525},
-            {id: 55, day: "備選美食", seq: "★", name: "Nosu KBBQ", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：頂級韓式烤肉<br><b>✨ 特色</b>：嚴選和牛與厚切豬五花，配菜豐盛。<br><b>⭐ 評分</b>：4.9 (97則) · Clayton", lat: -37.9255, lon: 145.1205},
-            {id: 56, day: "備選美食", seq: "★", name: "Lagotto", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：義式餐酒館與早午餐<br><b>✨ 特色</b>：高水準手工義大利麵與精選葡萄酒。<br><b>⭐ 評分</b>：4.7 (661則) · Fitzroy North", lat: -37.7885, lon: 144.9852}
+            // --- 擴充：備選口袋美食名單 ---
+            {id: 48, day: "備選美食", seq: "★", name: "Little Creatures Brewery", type: "備選美食", time: "大洋路/Geelong", desc: "<b>🍽️ 類型</b>：啤酒廠/披薩<br><b>⭐ 評分</b>：4.5 (1254則)", lat: -38.1528, lon: 144.3590},
+            {id: 49, day: "備選美食", seq: "★", name: "Apollo Bay Bakery", type: "備選美食", time: "大洋路", desc: "<b>🍽️ 類型</b>：著名干貝派<br><b>⭐ 評分</b>：4.4 (1844則)", lat: -38.7570, lon: 143.6675},
+            {id: 50, day: "備選美食", seq: "★", name: "Apollo Bay Distillery", type: "備選美食", time: "大洋路", desc: "<b>🍽️ 類型</b>：蒸餾廠與柴燒披薩<br><b>⭐ 評分</b>：4.5 (426則)", lat: -38.7575, lon: 143.6672},
+            {id: 51, day: "備選美食", seq: "★", name: "San Remo Fishermans Co-Op", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：人氣炸魚薯條<br><b>⭐ 評分</b>：4.3 (3490則)", lat: -38.5205, lon: 145.3650},
+            {id: 52, day: "備選美食", seq: "★", name: "Isola Di Capri", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：老字號義大利菜<br><b>⭐ 評分</b>：4.1 (1662則)", lat: -38.4525, lon: 145.2415},
+            {id: 53, day: "備選美食", seq: "★", name: "Hotel Phillip Island", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：澳式酒吧與牛排<br><b>⭐ 評分</b>：4.2 (1501則)", lat: -38.4520, lon: 145.2410},
+            {id: 54, day: "備選美食", seq: "★", name: "COZY ISLAND RESTAURANT", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：越南河粉/春捲<br><b>⭐ 評分</b>：4.6 (148則)", lat: -38.4530, lon: 145.2420},
+            {id: 55, day: "備選美食", seq: "★", name: "Meletos", type: "備選美食", time: "亞拉河谷", desc: "<b>🍽️ 類型</b>：莊園景觀餐廳<br><b>⭐ 評分</b>：4.3 (1793則)", lat: -37.7025, lon: 145.3950},
+            {id: 56, day: "備選美食", seq: "★", name: "The Epicurean Red Hill", type: "備選美食", time: "莫寧頓半島", desc: "<b>🍽️ 類型</b>：義式窯烤披薩<br><b>⭐ 評分</b>：4.1 (1275則)", lat: -38.3685, lon: 145.0205},
+            {id: 57, day: "備選美食", seq: "★", name: "Red Gum BBQ", type: "備選美食", time: "莫寧頓半島", desc: "<b>🍽️ 類型</b>：美式南方手撕豬燒烤<br><b>⭐ 評分</b>：4.2 (2307則)", lat: -38.3690, lon: 145.0200},
+            {id: 58, day: "備選美食", seq: "★", name: "D.O.C Pizza and Deli", type: "備選美食", time: "莫寧頓半島", desc: "<b>🍽️ 類型</b>：道地拿坡里披薩<br><b>⭐ 評分</b>：4.3 (2163則)", lat: -38.2230, lon: 145.0380},
+            {id: 59, day: "備選美食", seq: "★", name: "Pho Thin Australia", type: "備選美食", time: "CBD (黃明推)", desc: "<b>🍽️ 類型</b>：好吃北越蔥爆牛河<br><b>⭐ 評分</b>：4.1 (1905則)", lat: -37.8125, lon: 144.9602},
+            {id: 60, day: "備選美食", seq: "★", name: "Yuk Gam", type: "備選美食", time: "CBD (黃明推)", desc: "<b>🍽️ 類型</b>：高人氣韓式烤肉<br><b>⭐ 評分</b>：4.8 (2580則)", lat: -37.8118, lon: 144.9635},
+            {id: 61, day: "備選美食", seq: "★", name: "Tian38", type: "備選美食", time: "CBD (黃明推)", desc: "<b>🍽️ 類型</b>：新式星馬料理<br><b>⭐ 評分</b>：4.4 (1278則)", lat: -37.8182, lon: 144.9622},
+            {id: 62, day: "備選美食", seq: "★", name: "Soi 38 Melbourne", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：排隊泰式船麵<br><b>⭐ 評分</b>：4.2 (2813則)", lat: -37.8145, lon: 144.9680},
+            {id: 63, day: "備選美食", seq: "★", name: "Supernormal", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：亞洲融合菜/龍蝦刈包<br><b>⭐ 評分</b>：4.5 (5340則)", lat: -37.8155, lon: 144.9695},
+            {id: 64, day: "備選美食", seq: "★", name: "Panda Hot Pot (蜀大侠)", type: "備選美食", time: "Carlton", desc: "<b>🍽️ 類型</b>：超浮誇川味火鍋<br><b>⭐ 評分</b>：4.8 (12575則)", lat: -37.8035, lon: 144.9645},
+            {id: 65, day: "備選美食", seq: "★", name: "ShanDong MaMa", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：招牌鮁魚水餃<br><b>⭐ 評分</b>：4.1 (1463則)", lat: -37.8128, lon: 144.9678},
+            {id: 66, day: "備選美食", seq: "★", name: "Lee Ho Fook", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：摩登精緻中菜<br><b>⭐ 評分</b>：4.5 (623則)", lat: -37.8156, lon: 144.9711},
+            {id: 67, day: "備選美食", seq: "★", name: "Lune Croissanterie", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：世界第一法式可頌<br><b>⭐ 評分</b>：4.3 (4704則)", lat: -37.8140, lon: 144.9670},
+            {id: 68, day: "備選美食", seq: "★", name: "Higher Ground", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：挑高摩登早午餐<br><b>⭐ 評分</b>：4.1 (6154則)", lat: -37.8159, lon: 144.9542},
+            {id: 69, day: "備選美食", seq: "★", name: "The Hardware Société", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：墨爾本經典早午餐<br><b>⭐ 評分</b>：4.4 (4577則)", lat: -37.8126, lon: 144.9605},
+            {id: 70, day: "備選美食", seq: "★", name: "Pellegrini's", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：1954年懷舊義式咖啡<br><b>⭐ 評分</b>：4.4 (2977則)", lat: -37.8115, lon: 144.9725},
+            {id: 71, day: "備選美食", seq: "★", name: "Stalactites Restaurant", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：24H老字號希臘烤肉捲<br><b>⭐ 評分</b>：4.3 (9506則)", lat: -37.8109, lon: 144.9664},
+            {id: 72, day: "備選美食", seq: "★", name: "San Telmo", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：高檔阿根廷烤肉<br><b>⭐ 評分</b>：4.6 (4675則)", lat: -37.8122, lon: 144.9720},
+            {id: 73, day: "備選美食", seq: "★", name: "Reine & La Rue", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：超奢華法式料理<br><b>⭐ 評分</b>：4.5 (1860則)", lat: -37.8166, lon: 144.9610},
+            {id: 74, day: "備選美食", seq: "★", name: "MoVida", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：知名西班牙Tapas<br><b>⭐ 評分</b>：4.5 (2363則)", lat: -37.8164, lon: 144.9690},
+            {id: 75, day: "備選美食", seq: "★", name: "Bratwurst Shop & Co", type: "備選美食", time: "維多利亞市場", desc: "<b>🍽️ 類型</b>：超人氣德國熱狗堡攤<br><b>⭐ 評分</b>：4.4 (527則)", lat: -37.8076, lon: 144.9568},
+            {id: 76, day: "備選美食", seq: "★", name: "Mile End Bagels", type: "備選美食", time: "市區周邊", desc: "<b>🍽️ 類型</b>：柴燒窯烤貝果<br><b>⭐ 評分</b>：4.6 (1193則)", lat: -37.7970, lon: 144.9790},
+            {id: 77, day: "備選美食", seq: "★", name: "HEEBI", type: "備選美食", time: "Carlton", desc: "<b>🍽️ 類型</b>：創意西式早午餐<br><b>⭐ 評分</b>：4.7 (522則)", lat: -37.8028, lon: 144.9638},
+            {id: 78, day: "備選美食", seq: "★", name: "The Mazu Cafe", type: "備選美食", time: "Balwyn", desc: "<b>🍽️ 類型</b>：台式風味簡餐<br><b>⭐ 評分</b>：4.4 (812則)", lat: -37.8105, lon: 145.0802},
+            {id: 79, day: "備選美食", seq: "★", name: "Nosu KBBQ", type: "備選美食", time: "Clayton", desc: "<b>🍽️ 類型</b>：嚴選和牛韓烤<br><b>⭐ 評分</b>：4.9 (97則)", lat: -37.9255, lon: 145.1205}
         ];
 
-        // 將時間字串轉為日期物件以便儀表板比對
         var parsedLocations = locations.filter(l => l.day !== "備選美食").map(function(loc) {
             var timeParts = loc.time.split(" ");
             var md = timeParts[0].split("/");
@@ -308,7 +326,6 @@
             return { ...loc, dateObj: new Date(2026, parseInt(md[0]) - 1, parseInt(md[1]), parseInt(hm[0]), parseInt(hm[1])) };
         });
 
-        // 更新頂部智慧儀表板
         function updateDashboard() {
             var now = new Date();
             var currentLoc = null;
@@ -336,14 +353,16 @@
                 dashNext.innerHTML = `🔜 下一站：${nextLoc.time} ${nextLoc.name}`;
             }
         }
-        setInterval(updateDashboard, 60000); // 每分鐘更新一次儀表板
+        setInterval(updateDashboard, 60000);
         updateDashboard();
 
         var markersMap = {};
+        var activeRoutePolyline = null; 
+        var activeRouteTooltip = null; // 儲存車程時間標籤的變數
 
         function getIconForType(type) {
             switch(type) {
-                case '住宿': return 'fa-bed';
+                case '住宿': return 'fa-house'; // 更新為房屋圖示
                 case '景點': return 'fa-camera';
                 case '餐廳': return 'fa-utensils';
                 case '購物': return 'fa-shopping-bag';
@@ -356,13 +375,26 @@
         function openMarker(id) {
             if (markersMap[id]) {
                 var marker = markersMap[id];
-                map.flyTo(marker.getLatLng(), 15, {duration: 1.2});
-                marker.openPopup();
+                var loc = locations.find(l => l.id === id);
+
                 document.getElementById('sidebar').classList.remove('open');
+
+                if (id > 0 && loc && loc.day !== "備選美食") {
+                    var prevLoc = locations.find(l => l.id === id - 1);
+                    if (prevLoc) {
+                        var bounds = L.latLngBounds([prevLoc.lat, prevLoc.lon], [loc.lat, loc.lon]);
+                        map.flyToBounds(bounds.pad(0.2), {duration: 1.2, maxZoom: 14});
+                        
+                        setTimeout(function() { marker.openPopup(); }, 1250);
+                        return;
+                    }
+                }
+
+                map.flyTo(marker.getLatLng(), 15, {duration: 1.2});
+                setTimeout(function() { marker.openPopup(); }, 1250);
             }
         }
 
-        // 智慧跳轉 (無縫版：支援一鍵開啟自動飛躍)
         function jumpToCurrentStop(silent = false) {
             var now = new Date();
             var targetId = 0;
@@ -376,11 +408,10 @@
                 }
             });
             
-            if (!silent) alert("為您定位至當下行程點！");
+            if (!silent) alert("為您定位至當下行程點與動態路線！");
             openMarker(targetId);
         }
 
-        // 開啟 App 1.5 秒後自動飛躍至目前行程
         window.onload = function() {
             setTimeout(function() { jumpToCurrentStop(true); }, 1500);
         };
@@ -417,9 +448,13 @@
             var targetLoc = locations.find(function(loc) { return loc.day === dayName; });
             if (targetLoc && markersMap[targetLoc.id]) {
                 var marker = markersMap[targetLoc.id];
-                var zoomLevel = dayName === '備選美食' ? 12 : 11;
+                var zoomLevel = dayName === '備選美食' ? 10 : 11; 
                 map.flyTo(marker.getLatLng(), zoomLevel, {duration: 1.5});
-                marker.openPopup();
+                
+                if (activeRoutePolyline) { map.removeLayer(activeRoutePolyline); activeRoutePolyline = null; }
+                if (activeRouteTooltip) { map.removeLayer(activeRouteTooltip); activeRouteTooltip = null; }
+                
+                setTimeout(function() { marker.openPopup(); }, 1500);
             }
         }
 
@@ -432,7 +467,7 @@
                 className: 'custom-div-icon',
                 html: `<div class="numbered-marker-container">
                            <div class="numbered-marker" style='background-color:${color};'>${displaySeq}</div>
-                           <div class="marker-label" style="background: ${loc.day === '備選美食' ? '#e84393' : 'rgba(0,0,0,0.85)'};">${loc.name.substring(0,6)}</div>
+                           <div class="marker-label" style="background: ${loc.day === '備選美食' ? '#e84393' : 'rgba(0,0,0,0.85)'};">${loc.name.substring(0,8)}</div>
                        </div>`,
                 iconSize: [40, 50], iconAnchor: [20, 25]
             });
@@ -451,9 +486,16 @@
             var prevBtnHtml = prevId !== null ? `<button class="tour-btn" onclick="openMarker(${prevId})"><i class="fas fa-chevron-left"></i> 上一站</button>` : `<div></div>`;
             var nextBtnHtml = nextId !== null ? `<button class="tour-btn" onclick="openMarker(${nextId})">下一站 <i class="fas fa-chevron-right"></i></button>` : `<div></div>`;
             
-            // 一鍵 Google Maps 導航按鈕
+            var searchQuery = encodeURIComponent(loc.name + (loc.day === "備選美食" ? " Melbourne" : ""));
+            var mapUrl = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
             var navUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lon}`;
-            var navBtnHtml = `<a href="${navUrl}" target="_blank" class="nav-btn"><i class="fas fa-location-arrow"></i> 開啟 Google Maps 導航</a>`;
+            
+            var googleActionBtns = `
+                <div class="action-links">
+                    <a href="${mapUrl}" target="_blank" class="nav-btn map-view-btn"><i class="fas fa-store"></i> 評價資訊</a>
+                    <a href="${navUrl}" target="_blank" class="nav-btn nav-dir-btn"><i class="fas fa-location-arrow"></i> 導航去這</a>
+                </div>
+            `;
 
             var popupContent = `
                 <div class='popup-header'>
@@ -465,10 +507,53 @@
                     <b style='font-size: 14px; color: #222;'>${loc.name}</b>
                     <p>${loc.desc}</p>
                     <div class='tour-controls'>${prevBtnHtml}${nextBtnHtml}</div>
-                    ${navBtnHtml}
+                    ${googleActionBtns}
                 </div>
             `;
             marker.bindPopup(popupContent);
+            
+            // 監聽 Popup 打開事件，動態獲取真實路徑並標示所需時間
+            marker.on('popupopen', function() {
+                if (activeRoutePolyline) { map.removeLayer(activeRoutePolyline); activeRoutePolyline = null; }
+                if (activeRouteTooltip) { map.removeLayer(activeRouteTooltip); activeRouteTooltip = null; }
+                
+                if (loc.id > 0 && loc.day !== "備選美食") {
+                    var prevLoc = locations.find(l => l.id === loc.id - 1);
+                    if (prevLoc) {
+                        var osrmUrl = `https://router.project-osrm.org/route/v1/driving/${prevLoc.lon},${prevLoc.lat};${loc.lon},${loc.lat}?overview=full&geometries=geojson`;
+                        
+                        fetch(osrmUrl)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
+                                if (activeRouteTooltip) map.removeLayer(activeRouteTooltip);
+                                
+                                if (data && data.routes && data.routes.length > 0) {
+                                    var coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                                    activeRoutePolyline = L.polyline(coords, { color: '#e74c3c', weight: 4, className: 'route-line' }).addTo(map);
+                                    
+                                    // 計算車程時間
+                                    var durationSec = data.routes[0].duration;
+                                    var mins = Math.ceil(durationSec / 60);
+                                    var timeText = mins > 60 ? Math.floor(mins/60) + " 小時 " + (mins%60) + " 分" : mins + " 分鐘";
+                                    var midPoint = coords[Math.floor(coords.length / 2)];
+                                    
+                                    activeRouteTooltip = L.tooltip({ permanent: true, direction: 'center', className: 'route-tooltip' })
+                                        .setLatLng(midPoint)
+                                        .setContent("🚗 車程約 " + timeText)
+                                        .addTo(map);
+
+                                } else {
+                                    activeRoutePolyline = L.polyline([[prevLoc.lat, prevLoc.lon], [loc.lat, loc.lon]], { color: '#e74c3c', weight: 4, className: 'route-line' }).addTo(map);
+                                }
+                            })
+                            .catch(err => {
+                                if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
+                                activeRoutePolyline = L.polyline([[prevLoc.lat, prevLoc.lon], [loc.lat, loc.lon]], { color: '#e74c3c', weight: 4, className: 'route-line' }).addTo(map);
+                            });
+                    }
+                }
+            });
         });
 
         buildSidebar();
