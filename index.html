@@ -92,13 +92,11 @@
         .day-tab { background: #f1f2f6; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: bold; color: #333; white-space: nowrap; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; transition: all 0.2s; }
         .day-tab.active { background: #2c3e50; color: white; }
         
-        /* 專屬：備選美食 與 住宿清單 的樣式 */
         .day-tab.food-wishlist { background: #ffeaa7; color: #d35400; border: 1px solid #f1c40f; }
         .day-tab.food-wishlist.active { background: #e84393; color: white; border: 1px solid #e84393; }
         
         .day-tab.hotel-list { background: #f4ecf7; color: #8e44ad; border: 1px solid #9b59b6; }
         .day-tab.hotel-list.active { background: #8e44ad; color: white; border: 1px solid #8e44ad; }
-
     </style>
 </head>
 <body>
@@ -241,24 +239,18 @@
             "備選美食": "#e84393"
         };
 
-        // 包含訂房連結與新住宿點的完整資料 (動態給予 id)
-        var rawLocations = [
+        // 修復重點：確保變數名稱正確，且動態賦予 ID
+        var locations = [
             {day: "Base", seq: "1", name: "桃園機場 / 墨爾本機場", type: "交通", time: "9/24 23:30", desc: "夜間直飛班機，最高效率串接假期。", lat: -37.6690, lon: 144.8410},
             {day: "Day 2", seq: "1", name: "Hertz 機場租車", type: "交通", time: "9/25 11:30", desc: "完成租車，啟程亞拉河谷。", lat: -37.6700, lon: 144.8500},
             {day: "Day 2", seq: "2", name: "Domaine Chandon 酒莊", type: "景點", time: "9/25 12:30", desc: "LVMH集團頂級氣泡酒莊。", lat: -37.7188, lon: 145.4052},
             {day: "Day 2", seq: "3", name: "Yarra Valley Chocolaterie", type: "景點", time: "9/25 15:00", desc: "免費試吃手工巧克力。", lat: -37.6950, lon: 145.4300},
-            
-            // 住宿 1: 亞拉河谷
             {day: "Day 2", seq: "住宿", name: "Balgownie Estate", type: "住宿", time: "9/25 17:00", desc: "<b>📅 住宿</b>：9/25 - 9/26 (1晚)<br><b>✨ 特色</b>：葡萄園美景飯店。<br>", hotelLink: "https://www.agoda.com/zh-tw/balgownie-estate-vineyard-resort-spa/hotel/yarra-valley-au.html?selectedproperty=178521", lat: -37.6635, lon: 145.3725},
-            
             {day: "Day 2", seq: "5", name: "Coldstream Brewery", type: "餐廳", time: "9/25 18:30", desc: "鄉村啤酒館，品嚐精釀生啤。", lat: -37.7020, lon: 145.3900},
             {day: "Day 3", seq: "1", name: "亞拉河谷熱氣球", type: "景點", time: "9/26 05:00", desc: "清晨高空俯瞰葡萄園晨曦日出。", lat: -37.6800, lon: 145.3800},
             {day: "Day 3", seq: "2", name: "普芬比利鐵路", type: "景點", time: "9/26 11:00", desc: "百年窄軌蒸氣火車。", lat: -37.9090, lon: 145.3565},
             {day: "Day 3", seq: "3", name: "San Remo 炸魚薯條", type: "餐廳", time: "9/26 18:00", desc: "入島前享用現炸魚薯條。", lat: -38.5205, lon: 145.3650},
-            
-            // 住宿 2: 菲利浦島 Airbnb
             {day: "Day 3", seq: "住宿", name: "菲利浦島 Airbnb", type: "住宿", time: "9/26 19:30", desc: "<b>📅 住宿</b>：9/26 - 9/28 (2晚)<br><b>✨ 特色</b>：Cowes 小鎮，島上大本營。<br>", hotelLink: "https://www.airbnb.com.tw/rooms/1216507835192650476", lat: -38.4520, lon: 145.2410},
-            
             {day: "Day 4", seq: "1", name: "亞瑟王座鷹纜車", type: "景點", time: "9/27 09:00", desc: "樹冠纜車鳥瞰海灣。", lat: -38.3530, lon: 144.9540},
             {day: "Day 4", seq: "2", name: "Ashcombe 迷宮花園", type: "景點", time: "9/27 10:30", desc: "傳統樹籬迷宮與玫瑰花園。", lat: -38.3600, lon: 144.9100},
             {day: "Day 4", seq: "3", name: "The Epicurean Red Hill", type: "餐廳", time: "9/27 12:00", desc: "工業風義式窯烤餐廳。", lat: -38.3685, lon: 145.0205},
@@ -269,32 +261,20 @@
             {day: "Day 5", seq: "1", name: "Sorrento 渡輪", type: "交通", time: "9/28 10:00", desc: "搭乘渡輪橫越海灣。", lat: -38.3375, lon: 144.7435},
             {day: "Day 5", seq: "2", name: "吉朗小鎮", type: "餐廳", time: "9/28 11:30", desc: "大洋路前哨站午餐。", lat: -38.1499, lon: 144.3617},
             {day: "Day 5", seq: "3", name: "紀念拱門", type: "景點", time: "9/28 13:30", desc: "大洋路起點打卡。", lat: -38.4610, lon: 144.0200},
-            
-            // 住宿 3: 洛恩小鎮 Mantra Lorne Resort
             {day: "Day 5", seq: "住宿", name: "Mantra Lorne Resort", type: "住宿", time: "9/28 17:00", desc: "<b>📅 住宿</b>：9/28 - 9/29 (1晚)<br><b>✨ 特色</b>：大洋路精緻海濱度假村。<br>", hotelLink: "http://agoda.com/zh-tw/mantra-lorne-resort/hotel/great-ocean-road-lorne-au.html", lat: -38.5400, lon: 143.9750},
-            
             {day: "Day 6", seq: "1", name: "肯尼特河自然步道", type: "景點", time: "9/29 09:30", desc: "尋找野生無尾熊。", lat: -38.7800, lon: 143.8500},
             {day: "Day 6", seq: "2", name: "奧特威燈塔", type: "景點", time: "9/29 11:30", desc: "澳洲最古老燈塔。", lat: -38.8570, lon: 143.5110},
             {day: "Day 6", seq: "3", name: "Timboon 威士忌酒莊", type: "餐廳", time: "9/29 14:00", desc: "品嚐威士忌與甜點。", lat: -38.4800, lon: 142.9780},
-            
-            // 住宿 4: 坎貝爾港民宿
             {day: "Day 6", seq: "住宿", name: "坎貝爾港民宿", type: "住宿", time: "9/29 17:30", desc: "<b>📅 住宿</b>：9/29 - 9/30 (1晚)<br><b>✨ 特色</b>：採買食材，體驗民宿自煮晚餐。<br>", lat: -38.6186, lon: 142.9930},
-            
             {day: "Day 7", seq: "1", name: "十二使徒岩", type: "景點", time: "9/30 08:30", desc: "南冰洋壯麗石灰岩巨柱群。", lat: -38.6660, lon: 143.1040},
             {day: "Day 7", seq: "2", name: "阿德湖峽", type: "景點", time: "9/30 10:00", desc: "沉船海岸絕美峽灣。", lat: -38.6470, lon: 143.0700},
             {day: "Day 7", seq: "3", name: "倫敦橋", type: "景點", time: "9/30 11:15", desc: "天然海蝕拱門奇觀。", lat: -38.6230, lon: 142.9370},
             {day: "Day 7", seq: "4", name: "疏芬山礦場", type: "景點", time: "9/30 13:30", desc: "沉浸式淘金古鎮。", lat: -37.5740, lon: 143.8655},
-            
-            // 住宿 5: 巴拉瑞特 Mercure
             {day: "Day 7", seq: "住宿", name: "Mercure Ballarat", type: "住宿", time: "9/30 18:00", desc: "<b>📅 住宿</b>：9/30 - 10/1 (1晚)<br><b>✨ 特色</b>：淘金古城經典飯店夜宿。<br>", hotelLink: "https://www.agoda.com/zh-tw/mercure-ballarat-hotel-and-convention-centre/hotel/ballarat-au.html", lat: -37.5815, lon: 143.8645},
-            
             {day: "Day 8", seq: "1", name: "巴拉瑞特野生動物園", type: "景點", time: "10/1 08:30", desc: "接觸澳洲本土動物。", lat: -37.5800, lon: 143.8300},
             {day: "Day 8", seq: "2", name: "威瑞比野生動物園", type: "景點", time: "10/1 11:00", desc: "遊園車深入放養草原。", lat: -37.9710, lon: 144.6690},
             {day: "Day 8", seq: "3", name: "市區 Hertz 還車", type: "交通", time: "10/1 15:00", desc: "返回 CBD 還車，結束自駕。", lat: -37.8136, lon: 144.9631},
-            
-            // 住宿 6: 墨爾本市區 Atlantis Hotel
-            {day: "Day 8", seq: "住宿", name: "Atlantis Hotel Melbourne", type: "住宿", time: "10/1 16:00", desc: "<b>📅 住宿</b>：10/1 - 10/4 (市區連住3晚)<br><b>✨ 特色</b>：市區觀光大本營。<br>", hotelLink: "https://www.agoda.com/zh-tw/atlantis-hotel-melbourne/hotel/melbourne-au.html", lat: -37.8131, lon: 144.9511},
-            
+            {day: "Day 8", seq: "住宿", name: "Atlantis Hotel", type: "住宿", time: "10/1 16:00", desc: "<b>📅 住宿</b>：10/1 - 10/4 (市區連住3晚)<br><b>✨ 特色</b>：市區觀光大本營。<br>", hotelLink: "https://www.agoda.com/zh-tw/atlantis-hotel-melbourne/hotel/melbourne-au.html", lat: -37.8131, lon: 144.9511},
             {day: "Day 9", seq: "1", name: "咖啡一條街", type: "餐廳", time: "10/2 09:00", desc: "品嚐世界頂尖 Flat White。", lat: -37.8150, lon: 144.9650},
             {day: "Day 9", seq: "2", name: "費蓮達火車站", type: "景點", time: "10/2 10:00", desc: "最古老城市火車站地標。", lat: -37.8183, lon: 144.9671},
             {day: "Day 9", seq: "3", name: "維多利亞州立圖書館", type: "景點", time: "10/2 11:00", desc: "八角形穹頂閱覽室。", lat: -37.8105, lon: 144.9646},
@@ -346,9 +326,12 @@
             {day: "備選美食", seq: "★", name: "Nosu KBBQ", type: "備選美食", time: "Clayton", desc: "<b>🍽️ 類型</b>：嚴選和牛韓烤<br><b>⭐ 評分</b>：4.9 (97則)", lat: -37.9255, lon: 145.1205}
         ];
 
-        // 動態賦予 ID 避免手動編號錯亂
-        locations.forEach((loc, index) => { loc.id = index; });
+        // 徹底修復: 動態給予 ID，確保 markersMap 與導航追蹤按鈕絕對不出錯
+        locations.forEach(function(loc, index) { 
+            loc.id = index; 
+        });
 
+        // 解析非美食的行程時間，用於頂部儀表板動態對比
         var parsedLocations = locations.filter(l => l.day !== "備選美食").map(function(loc) {
             var timeParts = loc.time.split(" ");
             var md = timeParts[0].split("/");
@@ -495,7 +478,7 @@
             tabs.forEach(function(tab) { tab.classList.remove('active'); });
             btnElement.classList.add('active');
 
-            buildSidebar('all'); // 恢復全部列表
+            buildSidebar('all'); 
 
             var targetLoc = locations.find(function(loc) { return loc.day === dayName; });
             if (targetLoc && markersMap[targetLoc.id]) {
@@ -513,7 +496,6 @@
         locations.forEach(function(loc) {
             var color = colors[loc.day] || "#34495e";
             
-            // 決定地圖上的標記 Icon 與底色
             var isHotel = loc.type === "住宿";
             var isFood = loc.day === "備選美食";
             
@@ -549,7 +531,6 @@
                 </div>
             `;
             
-            // 如果是住宿且有訂房網址，增加專屬訂房按鈕
             if (isHotel && loc.hotelLink) {
                 googleActionBtns += `<a href="${loc.hotelLink}" target="_blank" class="nav-btn hotel-book-btn"><i class="fas fa-link"></i> 前往訂房網確認</a>`;
             }
