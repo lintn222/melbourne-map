@@ -36,12 +36,14 @@
         .tour-btn { background-color: #2c3e50; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
         .tour-btn:active { background-color: #1a252f; transform: scale(0.98); }
         
-        .action-links { display: flex; gap: 8px; margin-top: 8px; }
-        .nav-btn { color: white; text-decoration: none; padding: 12px 10px; border-radius: 8px; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1; box-sizing: border-box; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); }
+        .action-links { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+        .nav-btn { color: white; text-decoration: none; padding: 10px 8px; border-radius: 8px; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; min-width: 45%; box-sizing: border-box; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); }
         .map-view-btn { background-color: #3498db; }
         .map-view-btn:active { background-color: #2980b9; transform: scale(0.98); }
         .nav-dir-btn { background-color: #27ae60; }
         .nav-dir-btn:active { background-color: #219653; transform: scale(0.98); }
+        .hotel-book-btn { background-color: #8e44ad; width: 100%; margin-top: 4px; }
+        .hotel-book-btn:active { background-color: #732d91; transform: scale(0.98); }
 
         /* 標記樣式 */
         .numbered-marker-container { display: flex; flex-direction: column; align-items: center; }
@@ -87,17 +89,23 @@
         /* 底部智慧行程快速切換列 */
         .day-bar { position: absolute; bottom: calc(env(safe-area-inset-bottom, 10px) + 15px); left: 10px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 10px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); display: flex; overflow-x: auto; gap: 8px; scrollbar-width: none; }
         .day-bar::-webkit-scrollbar { display: none; }
-        .day-tab { background: #f1f2f6; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: bold; color: #333; white-space: nowrap; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .day-tab { background: #f1f2f6; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: bold; color: #333; white-space: nowrap; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; transition: all 0.2s; }
         .day-tab.active { background: #2c3e50; color: white; }
+        
+        /* 專屬：備選美食 與 住宿清單 的樣式 */
         .day-tab.food-wishlist { background: #ffeaa7; color: #d35400; border: 1px solid #f1c40f; }
         .day-tab.food-wishlist.active { background: #e84393; color: white; border: 1px solid #e84393; }
+        
+        .day-tab.hotel-list { background: #f4ecf7; color: #8e44ad; border: 1px solid #9b59b6; }
+        .day-tab.hotel-list.active { background: #8e44ad; color: white; border: 1px solid #8e44ad; }
+
     </style>
 </head>
 <body>
     <div class="smart-dashboard" onclick="jumpToCurrentStop(true)">
         <div class="dashboard-current" id="dashCurrent"><i class="fas fa-spinner fa-spin"></i> 同步行程中...</div>
         <div class="dashboard-next" id="dashNext">正在載入即時導航引擎</div>
-        <div class="dashboard-hint"><i class="fas fa-crosshairs"></i> 點擊此處追蹤目前行程與路線</div>
+        <div class="dashboard-hint"><i class="fas fa-crosshairs"></i> 點擊此處自動鎖定您目前的行程點</div>
     </div>
 
     <div class="top-right-btns">
@@ -114,22 +122,23 @@
     <div id="legendPanel" class="legend-panel">
         <div style="margin-bottom: 12px;">
             <h4>📌 符號對應</h4>
+            <span class="icon-box" style="color: #8e44ad;"><i class="fas fa-house"></i></span> 住宿地點<br>
             <span class="icon-box" style="color: #e84393;"><i class="fas fa-star"></i></span> 備選美食清單<br>
-            <span class="icon-box"><i class="fas fa-house"></i></span> 住宿地點<br>
             <span class="icon-box"><i class="fas fa-camera"></i></span> 觀光景點<br>
             <span class="icon-box"><i class="fas fa-utensils"></i></span> 行程餐廳<br>
             <span class="icon-box"><i class="fas fa-car"></i></span> 交通/機場<br>
         </div>
         <div>
             <h4>🗓️ 天數顏色</h4>
+            <i class="color-box" style="background: #8e44ad"></i> 住宿地點<br>
             <i class="color-box" style="background: #e84393"></i> 備選口袋美食<br>
             <i class="color-box" style="background: #2c3e50"></i> Base (機場)<br>
             <i class="color-box" style="background: #e74c3c"></i> Day 2 (亞拉)<br>
             <i class="color-box" style="background: #3498db"></i> Day 3 (菲利浦)<br>
-            <i class="color-box" style="background: #2ecc71"></i> Day 4 (莫寧頓)<br>
+            <i class="color-box" style="background: #2ecc71"></i> Day 4 (莫寧)<br>
             <i class="color-box" style="background: #1abc9c"></i> Day 5 (大洋東)<br>
             <i class="color-box" style="background: #9b59b6"></i> Day 6 (大洋中)<br>
-            <i class="color-box" style="background: #e67e22"></i> Day 7 (十二使徒)<br>
+            <i class="color-box" style="background: #e67e22"></i> Day 7 (十二徒)<br>
             <i class="color-box" style="background: #f1c40f"></i> Day 8 (動物園)<br>
             <i class="color-box" style="background: #34495e"></i> Day 9-11 (市區)<br>
         </div>
@@ -137,7 +146,7 @@
 
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <span>🗺️ 行程總覽 & 美食</span>
+            <span id="sidebarTitle">🗺️ 行程總覽</span>
             <button class="sidebar-close" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
         <div class="sidebar-content" id="sidebarList"></div>
@@ -155,6 +164,7 @@
         <button class="day-tab" onclick="jumpToDay('Day 9', this)">Day 9</button>
         <button class="day-tab" onclick="jumpToDay('Day 10', this)">Day 10</button>
         <button class="day-tab" onclick="jumpToDay('Day 11', this)">Day 11</button>
+        <button class="day-tab hotel-list" onclick="jumpToHotelList(this)">🏨 住宿地圖</button>
         <button class="day-tab food-wishlist" onclick="jumpToDay('備選美食', this)">🍽️ 口袋清單</button>
     </div>
 
@@ -218,9 +228,7 @@
 
         map.on('locationfound', function(e) {
             if (!userMarker) {
-                userMarker = L.circleMarker(e.latlng, {
-                    radius: 8, fillColor: "#3498db", color: "#ffffff", weight: 3, opacity: 1, fillOpacity: 0.9
-                }).addTo(map);
+                userMarker = L.circleMarker(e.latlng, { radius: 8, fillColor: "#3498db", color: "#ffffff", weight: 3, opacity: 1, fillOpacity: 0.9 }).addTo(map);
                 userMarker.bindPopup("📍 我們現在在這裡！");
             } else {
                 userMarker.setLatLng(e.latlng);
@@ -233,91 +241,113 @@
             "備選美食": "#e84393"
         };
 
-        var locations = [
-            // --- 原始 11 天行程 ---
-            {id: 0, day: "Base", seq: "1", name: "桃園機場 / 墨爾本機場", type: "交通", time: "9/24 23:30", desc: "夜間直飛班機，最高效率串接假期。", lat: -37.6690, lon: 144.8410},
-            {id: 1, day: "Day 2", seq: "1", name: "Hertz 機場租車", type: "交通", time: "9/25 11:30", desc: "完成租車，啟程亞拉河谷。", lat: -37.6700, lon: 144.8500},
-            {id: 2, day: "Day 2", seq: "2", name: "Domaine Chandon 酒莊", type: "景點", time: "9/25 12:30", desc: "LVMH集團頂級氣泡酒莊。", lat: -37.7188, lon: 145.4052},
-            {id: 3, day: "Day 2", seq: "3", name: "Yarra Valley Chocolaterie", type: "景點", time: "9/25 15:00", desc: "免費試吃手工巧克力。", lat: -37.6950, lon: 145.4300},
-            {id: 4, day: "Day 2", seq: "4", name: "Balgownie Estate", type: "住宿", time: "9/25 17:00", desc: "葡萄園美景飯店，熱氣球集合點。", lat: -37.6635, lon: 145.3725},
-            {id: 5, day: "Day 2", seq: "5", name: "Coldstream Brewery", type: "餐廳", time: "9/25 18:30", desc: "鄉村啤酒館，品嚐精釀生啤。", lat: -37.7020, lon: 145.3900},
-            {id: 6, day: "Day 3", seq: "1", name: "亞拉河谷熱氣球", type: "景點", time: "9/26 05:00", desc: "清晨高空俯瞰葡萄園晨曦日出。", lat: -37.6800, lon: 145.3800},
-            {id: 7, day: "Day 3", seq: "2", name: "普芬比利鐵路", type: "景點", time: "9/26 11:00", desc: "百年窄軌蒸氣火車。", lat: -37.9090, lon: 145.3565},
-            {id: 8, day: "Day 3", seq: "3", name: "San Remo 炸魚薯條", type: "餐廳", time: "9/26 18:00", desc: "入島前享用現炸魚薯條。", lat: -38.5205, lon: 145.3650},
-            {id: 9, day: "Day 3", seq: "4", name: "Cowes 小鎮", type: "住宿", time: "9/26 19:30", desc: "菲利浦島大本營。", lat: -38.4520, lon: 145.2410},
-            {id: 10, day: "Day 4", seq: "1", name: "亞瑟王座鷹纜車", type: "景點", time: "9/27 09:00", desc: "樹冠纜車鳥瞰海灣。", lat: -38.3530, lon: 144.9540},
-            {id: 11, day: "Day 4", seq: "2", name: "Ashcombe 迷宮花園", type: "景點", time: "9/27 10:30", desc: "傳統樹籬迷宮與玫瑰花園。", lat: -38.3600, lon: 144.9100},
-            {id: 12, day: "Day 4", seq: "3", name: "The Epicurean Red Hill", type: "餐廳", time: "9/27 12:00", desc: "工業風義式窯烤餐廳。", lat: -38.3685, lon: 145.0205},
-            {id: 13, day: "Day 4", seq: "4", name: "月光保護區", type: "景點", time: "9/27 14:00", desc: "親手餵袋鼠。", lat: -38.2045, lon: 145.2530},
-            {id: 14, day: "Day 4", seq: "5", name: "巧克力工廠", type: "景點", time: "9/27 15:30", desc: "參觀奇妙製程品嚐巧克力。", lat: -38.4800, lon: 145.1800},
-            {id: 15, day: "Day 4", seq: "6", name: "無尾熊保育中心", type: "景點", time: "9/27 16:30", desc: "木棧道平視無尾熊。", lat: -38.4900, lon: 145.2200},
-            {id: 16, day: "Day 4", seq: "7", name: "企鵝歸巢", type: "景點", time: "9/27 17:30", desc: "夏藍海灘看神仙企鵝返巢。", lat: -38.5080, lon: 145.1480},
-            {id: 17, day: "Day 5", seq: "1", name: "Sorrento 渡輪", type: "交通", time: "9/28 10:00", desc: "搭乘渡輪橫越海灣。", lat: -38.3375, lon: 144.7435},
-            {id: 18, day: "Day 5", seq: "2", name: "吉朗小鎮", type: "餐廳", time: "9/28 11:30", desc: "大洋路前哨站午餐。", lat: -38.1499, lon: 144.3617},
-            {id: 19, day: "Day 5", seq: "3", name: "紀念拱門", type: "景點", time: "9/28 13:30", desc: "大洋路起點打卡。", lat: -38.4610, lon: 144.0200},
-            {id: 20, day: "Day 5", seq: "4", name: "阿波羅海灣", type: "住宿", time: "9/28 17:00", desc: "大洋路東段海濱中繼站。", lat: -38.7590, lon: 143.6670},
-            {id: 21, day: "Day 6", seq: "1", name: "肯尼特河自然步道", type: "景點", time: "9/29 09:30", desc: "尋找野生無尾熊。", lat: -38.7800, lon: 143.8500},
-            {id: 22, day: "Day 6", seq: "2", name: "奧特威燈塔", type: "景點", time: "9/29 11:30", desc: "澳洲最古老燈塔。", lat: -38.8570, lon: 143.5110},
-            {id: 23, day: "Day 6", seq: "3", name: "Timboon 威士忌酒莊", type: "餐廳", time: "9/29 14:00", desc: "品嚐威士忌與甜點。", lat: -38.4800, lon: 142.9780},
-            {id: 24, day: "Day 6", seq: "4", name: "坎貝爾港民宿", type: "住宿", time: "9/29 17:30", desc: "體驗民宿自煮晚餐。", lat: -38.6186, lon: 142.9930},
-            {id: 25, day: "Day 7", seq: "1", name: "十二使徒岩", type: "景點", time: "9/30 08:30", desc: "南冰洋壯麗石灰岩巨柱群。", lat: -38.6660, lon: 143.1040},
-            {id: 26, day: "Day 7", seq: "2", name: "阿德湖峽", type: "景點", time: "9/30 10:00", desc: "沉船海岸絕美峽灣。", lat: -38.6470, lon: 143.0700},
-            {id: 27, day: "Day 7", seq: "3", name: "倫敦橋", type: "景點", time: "9/30 11:15", desc: "天然海蝕拱門奇觀。", lat: -38.6230, lon: 142.9370},
-            {id: 28, day: "Day 7", seq: "4", name: "疏芬山礦場", type: "景點", time: "9/30 13:30", desc: "沉浸式淘金古鎮。", lat: -37.5740, lon: 143.8655},
-            {id: 29, day: "Day 7", seq: "5", name: "巴拉瑞特市區", type: "住宿", time: "9/30 18:00", desc: "淘金古城夜宿。", lat: -37.5622, lon: 143.8503},
-            {id: 30, day: "Day 8", seq: "1", name: "巴拉瑞特野生動物園", type: "景點", time: "10/1 08:30", desc: "接觸澳洲本土動物。", lat: -37.5800, lon: 143.8300},
-            {id: 31, day: "Day 8", seq: "2", name: "威瑞比野生動物園", type: "景點", time: "10/1 11:00", desc: "遊園車深入放養草原。", lat: -37.9710, lon: 144.6690},
-            {id: 32, day: "Day 8", seq: "3", name: "市區 Hertz 還車", type: "交通", time: "10/1 15:00", desc: "返回 CBD 還車，結束自駕。", lat: -37.8136, lon: 144.9631},
-            {id: 33, day: "Day 9", seq: "1", name: "咖啡一條街", type: "餐廳", time: "10/2 09:00", desc: "品嚐世界頂尖 Flat White。", lat: -37.8150, lon: 144.9650},
-            {id: 34, day: "Day 9", seq: "2", name: "費蓮達火車站", type: "景點", time: "10/2 10:00", desc: "最古老城市火車站地標。", lat: -37.8183, lon: 144.9671},
-            {id: 35, day: "Day 9", seq: "3", name: "維多利亞州立圖書館", type: "景點", time: "10/2 11:00", desc: "八角形穹頂閱覽室。", lat: -37.8105, lon: 144.9646},
-            {id: 36, day: "Day 9", seq: "4", name: "墨珠動物園", type: "景點", time: "10/2 13:30", desc: "最悠久的經典動物園。", lat: -37.7841, lon: 144.9515},
-            {id: 37, day: "Day 9", seq: "5", name: "DFO & Emporium", type: "購物", time: "10/2 16:00", desc: "市區潮流與精品購物。", lat: -37.8225, lon: 144.9540},
-            {id: 38, day: "Day 10", seq: "1", name: "維多利亞市場", type: "景點", time: "10/3 09:30", desc: "南半球最大露天市場。", lat: -37.8076, lon: 144.9568},
-            {id: 39, day: "Day 10", seq: "2", name: "皇家展覽館", type: "景點", time: "10/3 11:00", desc: "世界文化遺產建築。", lat: -37.8044, lon: 144.9715},
-            {id: 40, day: "Day 10", seq: "3", name: "戰爭紀念館", type: "景點", time: "10/3 13:30", desc: "希臘神廟風格紀念建築。", lat: -37.8296, lon: 144.9705},
-            {id: 41, day: "Day 10", seq: "4", name: "Spencer Outlet & QV", type: "購物", time: "10/3 15:30", desc: "血拼紀念品與在地服飾。", lat: -37.8180, lon: 144.9550},
-            {id: 42, day: "Day 10", seq: "5", name: "墨爾本觀景台", type: "景點", time: "10/3 18:00", desc: "88樓俯瞰日落與百萬夜景。", lat: -37.8214, lon: 144.9647},
-            {id: 43, day: "Day 11", seq: "1", name: "聖保羅座堂", type: "景點", time: "10/4 10:00", desc: "哥德復興式宏偉大教堂。", lat: -37.8170, lon: 144.9680},
-            {id: 44, day: "Day 11", seq: "2", name: "海洋生物水族館", type: "景點", time: "10/4 11:00", desc: "360度海底隧道。", lat: -37.8188, lon: 144.9575},
-            {id: 45, day: "Day 11", seq: "3", name: "南墨爾本市場", type: "餐廳", time: "10/4 12:30", desc: "百年市場大啖現開生蠔。", lat: -37.8318, lon: 144.9556},
-            {id: 46, day: "Day 11", seq: "4", name: "布洛克拱廊", type: "景點", time: "10/4 14:30", desc: "仿米蘭拱廊的奢華馬賽克長廊。", lat: -37.8143, lon: 144.9650},
-            {id: 47, day: "Day 11", seq: "5", name: "墨爾本機場 / 賦歸", type: "交通", time: "10/4 21:50", desc: "搭乘直飛班機返回台灣。", lat: -37.6690, lon: 144.8410},
+        // 包含訂房連結與新住宿點的完整資料 (動態給予 id)
+        var rawLocations = [
+            {day: "Base", seq: "1", name: "桃園機場 / 墨爾本機場", type: "交通", time: "9/24 23:30", desc: "夜間直飛班機，最高效率串接假期。", lat: -37.6690, lon: 144.8410},
+            {day: "Day 2", seq: "1", name: "Hertz 機場租車", type: "交通", time: "9/25 11:30", desc: "完成租車，啟程亞拉河谷。", lat: -37.6700, lon: 144.8500},
+            {day: "Day 2", seq: "2", name: "Domaine Chandon 酒莊", type: "景點", time: "9/25 12:30", desc: "LVMH集團頂級氣泡酒莊。", lat: -37.7188, lon: 145.4052},
+            {day: "Day 2", seq: "3", name: "Yarra Valley Chocolaterie", type: "景點", time: "9/25 15:00", desc: "免費試吃手工巧克力。", lat: -37.6950, lon: 145.4300},
+            
+            // 住宿 1: 亞拉河谷
+            {day: "Day 2", seq: "住宿", name: "Balgownie Estate", type: "住宿", time: "9/25 17:00", desc: "<b>📅 住宿</b>：9/25 - 9/26 (1晚)<br><b>✨ 特色</b>：葡萄園美景飯店。<br>", hotelLink: "https://www.agoda.com/zh-tw/balgownie-estate-vineyard-resort-spa/hotel/yarra-valley-au.html?selectedproperty=178521", lat: -37.6635, lon: 145.3725},
+            
+            {day: "Day 2", seq: "5", name: "Coldstream Brewery", type: "餐廳", time: "9/25 18:30", desc: "鄉村啤酒館，品嚐精釀生啤。", lat: -37.7020, lon: 145.3900},
+            {day: "Day 3", seq: "1", name: "亞拉河谷熱氣球", type: "景點", time: "9/26 05:00", desc: "清晨高空俯瞰葡萄園晨曦日出。", lat: -37.6800, lon: 145.3800},
+            {day: "Day 3", seq: "2", name: "普芬比利鐵路", type: "景點", time: "9/26 11:00", desc: "百年窄軌蒸氣火車。", lat: -37.9090, lon: 145.3565},
+            {day: "Day 3", seq: "3", name: "San Remo 炸魚薯條", type: "餐廳", time: "9/26 18:00", desc: "入島前享用現炸魚薯條。", lat: -38.5205, lon: 145.3650},
+            
+            // 住宿 2: 菲利浦島 Airbnb
+            {day: "Day 3", seq: "住宿", name: "菲利浦島 Airbnb", type: "住宿", time: "9/26 19:30", desc: "<b>📅 住宿</b>：9/26 - 9/28 (2晚)<br><b>✨ 特色</b>：Cowes 小鎮，島上大本營。<br>", hotelLink: "https://www.airbnb.com.tw/rooms/1216507835192650476", lat: -38.4520, lon: 145.2410},
+            
+            {day: "Day 4", seq: "1", name: "亞瑟王座鷹纜車", type: "景點", time: "9/27 09:00", desc: "樹冠纜車鳥瞰海灣。", lat: -38.3530, lon: 144.9540},
+            {day: "Day 4", seq: "2", name: "Ashcombe 迷宮花園", type: "景點", time: "9/27 10:30", desc: "傳統樹籬迷宮與玫瑰花園。", lat: -38.3600, lon: 144.9100},
+            {day: "Day 4", seq: "3", name: "The Epicurean Red Hill", type: "餐廳", time: "9/27 12:00", desc: "工業風義式窯烤餐廳。", lat: -38.3685, lon: 145.0205},
+            {day: "Day 4", seq: "4", name: "月光保護區", type: "景點", time: "9/27 14:00", desc: "親手餵袋鼠。", lat: -38.2045, lon: 145.2530},
+            {day: "Day 4", seq: "5", name: "巧克力工廠", type: "景點", time: "9/27 15:30", desc: "參觀奇妙製程品嚐巧克力。", lat: -38.4800, lon: 145.1800},
+            {day: "Day 4", seq: "6", name: "無尾熊保育中心", type: "景點", time: "9/27 16:30", desc: "木棧道平視無尾熊。", lat: -38.4900, lon: 145.2200},
+            {day: "Day 4", seq: "7", name: "企鵝歸巢", type: "景點", time: "9/27 17:30", desc: "夏藍海灘看神仙企鵝返巢。", lat: -38.5080, lon: 145.1480},
+            {day: "Day 5", seq: "1", name: "Sorrento 渡輪", type: "交通", time: "9/28 10:00", desc: "搭乘渡輪橫越海灣。", lat: -38.3375, lon: 144.7435},
+            {day: "Day 5", seq: "2", name: "吉朗小鎮", type: "餐廳", time: "9/28 11:30", desc: "大洋路前哨站午餐。", lat: -38.1499, lon: 144.3617},
+            {day: "Day 5", seq: "3", name: "紀念拱門", type: "景點", time: "9/28 13:30", desc: "大洋路起點打卡。", lat: -38.4610, lon: 144.0200},
+            
+            // 住宿 3: 洛恩小鎮 Mantra Lorne Resort
+            {day: "Day 5", seq: "住宿", name: "Mantra Lorne Resort", type: "住宿", time: "9/28 17:00", desc: "<b>📅 住宿</b>：9/28 - 9/29 (1晚)<br><b>✨ 特色</b>：大洋路精緻海濱度假村。<br>", hotelLink: "http://agoda.com/zh-tw/mantra-lorne-resort/hotel/great-ocean-road-lorne-au.html", lat: -38.5400, lon: 143.9750},
+            
+            {day: "Day 6", seq: "1", name: "肯尼特河自然步道", type: "景點", time: "9/29 09:30", desc: "尋找野生無尾熊。", lat: -38.7800, lon: 143.8500},
+            {day: "Day 6", seq: "2", name: "奧特威燈塔", type: "景點", time: "9/29 11:30", desc: "澳洲最古老燈塔。", lat: -38.8570, lon: 143.5110},
+            {day: "Day 6", seq: "3", name: "Timboon 威士忌酒莊", type: "餐廳", time: "9/29 14:00", desc: "品嚐威士忌與甜點。", lat: -38.4800, lon: 142.9780},
+            
+            // 住宿 4: 坎貝爾港民宿
+            {day: "Day 6", seq: "住宿", name: "坎貝爾港民宿", type: "住宿", time: "9/29 17:30", desc: "<b>📅 住宿</b>：9/29 - 9/30 (1晚)<br><b>✨ 特色</b>：採買食材，體驗民宿自煮晚餐。<br>", lat: -38.6186, lon: 142.9930},
+            
+            {day: "Day 7", seq: "1", name: "十二使徒岩", type: "景點", time: "9/30 08:30", desc: "南冰洋壯麗石灰岩巨柱群。", lat: -38.6660, lon: 143.1040},
+            {day: "Day 7", seq: "2", name: "阿德湖峽", type: "景點", time: "9/30 10:00", desc: "沉船海岸絕美峽灣。", lat: -38.6470, lon: 143.0700},
+            {day: "Day 7", seq: "3", name: "倫敦橋", type: "景點", time: "9/30 11:15", desc: "天然海蝕拱門奇觀。", lat: -38.6230, lon: 142.9370},
+            {day: "Day 7", seq: "4", name: "疏芬山礦場", type: "景點", time: "9/30 13:30", desc: "沉浸式淘金古鎮。", lat: -37.5740, lon: 143.8655},
+            
+            // 住宿 5: 巴拉瑞特 Mercure
+            {day: "Day 7", seq: "住宿", name: "Mercure Ballarat", type: "住宿", time: "9/30 18:00", desc: "<b>📅 住宿</b>：9/30 - 10/1 (1晚)<br><b>✨ 特色</b>：淘金古城經典飯店夜宿。<br>", hotelLink: "https://www.agoda.com/zh-tw/mercure-ballarat-hotel-and-convention-centre/hotel/ballarat-au.html", lat: -37.5815, lon: 143.8645},
+            
+            {day: "Day 8", seq: "1", name: "巴拉瑞特野生動物園", type: "景點", time: "10/1 08:30", desc: "接觸澳洲本土動物。", lat: -37.5800, lon: 143.8300},
+            {day: "Day 8", seq: "2", name: "威瑞比野生動物園", type: "景點", time: "10/1 11:00", desc: "遊園車深入放養草原。", lat: -37.9710, lon: 144.6690},
+            {day: "Day 8", seq: "3", name: "市區 Hertz 還車", type: "交通", time: "10/1 15:00", desc: "返回 CBD 還車，結束自駕。", lat: -37.8136, lon: 144.9631},
+            
+            // 住宿 6: 墨爾本市區 Atlantis Hotel
+            {day: "Day 8", seq: "住宿", name: "Atlantis Hotel Melbourne", type: "住宿", time: "10/1 16:00", desc: "<b>📅 住宿</b>：10/1 - 10/4 (市區連住3晚)<br><b>✨ 特色</b>：市區觀光大本營。<br>", hotelLink: "https://www.agoda.com/zh-tw/atlantis-hotel-melbourne/hotel/melbourne-au.html", lat: -37.8131, lon: 144.9511},
+            
+            {day: "Day 9", seq: "1", name: "咖啡一條街", type: "餐廳", time: "10/2 09:00", desc: "品嚐世界頂尖 Flat White。", lat: -37.8150, lon: 144.9650},
+            {day: "Day 9", seq: "2", name: "費蓮達火車站", type: "景點", time: "10/2 10:00", desc: "最古老城市火車站地標。", lat: -37.8183, lon: 144.9671},
+            {day: "Day 9", seq: "3", name: "維多利亞州立圖書館", type: "景點", time: "10/2 11:00", desc: "八角形穹頂閱覽室。", lat: -37.8105, lon: 144.9646},
+            {day: "Day 9", seq: "4", name: "墨爾本動物園", type: "景點", time: "10/2 13:30", desc: "最悠久的經典動物園。", lat: -37.7841, lon: 144.9515},
+            {day: "Day 9", seq: "5", name: "DFO & Emporium", type: "購物", time: "10/2 16:00", desc: "市區潮流與精品購物。", lat: -37.8225, lon: 144.9540},
+            {day: "Day 10", seq: "1", name: "維多利亞市場", type: "景點", time: "10/3 09:30", desc: "南半球最大露天市場。", lat: -37.8076, lon: 144.9568},
+            {day: "Day 10", seq: "2", name: "皇家展覽館", type: "景點", time: "10/3 11:00", desc: "世界文化遺產建築。", lat: -37.8044, lon: 144.9715},
+            {day: "Day 10", seq: "3", name: "戰爭紀念館", type: "景點", time: "10/3 13:30", desc: "希臘神廟風格紀念建築。", lat: -37.8296, lon: 144.9705},
+            {day: "Day 10", seq: "4", name: "Spencer Outlet & QV", type: "購物", time: "10/3 15:30", desc: "血拼紀念品與在地服飾。", lat: -37.8180, lon: 144.9550},
+            {day: "Day 10", seq: "5", name: "墨爾本觀景台", type: "景點", time: "10/3 18:00", desc: "88樓俯瞰日落與百萬夜景。", lat: -37.8214, lon: 144.9647},
+            {day: "Day 11", seq: "1", name: "聖保羅座堂", type: "景點", time: "10/4 10:00", desc: "哥德復興式宏偉大教堂。", lat: -37.8170, lon: 144.9680},
+            {day: "Day 11", seq: "2", name: "海洋生物水族館", type: "景點", time: "10/4 11:00", desc: "360度海底隧道。", lat: -37.8188, lon: 144.9575},
+            {day: "Day 11", seq: "3", name: "南墨爾本市場", type: "餐廳", time: "10/4 12:30", desc: "百年市場大啖現開生蠔。", lat: -37.8318, lon: 144.9556},
+            {day: "Day 11", seq: "4", name: "布洛克拱廊", type: "景點", time: "10/4 14:30", desc: "仿米蘭拱廊的奢華馬賽克長廊。", lat: -37.8143, lon: 144.9650},
+            {day: "Day 11", seq: "5", name: "墨爾本機場 / 賦歸", type: "交通", time: "10/4 21:50", desc: "搭乘直飛班機返回台灣。", lat: -37.6690, lon: 144.8410},
 
             // --- 擴充：備選口袋美食名單 ---
-            {id: 48, day: "備選美食", seq: "★", name: "Little Creatures Brewery", type: "備選美食", time: "大洋路/Geelong", desc: "<b>🍽️ 類型</b>：啤酒廠/披薩<br><b>⭐ 評分</b>：4.5 (1254則)", lat: -38.1528, lon: 144.3590},
-            {id: 49, day: "備選美食", seq: "★", name: "Apollo Bay Bakery", type: "備選美食", time: "大洋路", desc: "<b>🍽️ 類型</b>：著名干貝派<br><b>⭐ 評分</b>：4.4 (1844則)", lat: -38.7570, lon: 143.6675},
-            {id: 50, day: "備選美食", seq: "★", name: "Apollo Bay Distillery", type: "備選美食", time: "大洋路", desc: "<b>🍽️ 類型</b>：蒸餾廠與柴燒披薩<br><b>⭐ 評分</b>：4.5 (426則)", lat: -38.7575, lon: 143.6672},
-            {id: 51, day: "備選美食", seq: "★", name: "San Remo Fishermans Co-Op", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：人氣炸魚薯條<br><b>⭐ 評分</b>：4.3 (3490則)", lat: -38.5205, lon: 145.3650},
-            {id: 52, day: "備選美食", seq: "★", name: "Isola Di Capri", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：老字號義大利菜<br><b>⭐ 評分</b>：4.1 (1662則)", lat: -38.4525, lon: 145.2415},
-            {id: 53, day: "備選美食", seq: "★", name: "Hotel Phillip Island", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：澳式酒吧與牛排<br><b>⭐ 評分</b>：4.2 (1501則)", lat: -38.4520, lon: 145.2410},
-            {id: 54, day: "備選美食", seq: "★", name: "COZY ISLAND RESTAURANT", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：越南河粉/春捲<br><b>⭐ 評分</b>：4.6 (148則)", lat: -38.4530, lon: 145.2420},
-            {id: 55, day: "備選美食", seq: "★", name: "Meletos", type: "備選美食", time: "亞拉河谷", desc: "<b>🍽️ 類型</b>：莊園景觀餐廳<br><b>⭐ 評分</b>：4.3 (1793則)", lat: -37.7025, lon: 145.3950},
-            {id: 56, day: "備選美食", seq: "★", name: "The Epicurean Red Hill", type: "備選美食", time: "莫寧頓半島", desc: "<b>🍽️ 類型</b>：義式窯烤披薩<br><b>⭐ 評分</b>：4.1 (1275則)", lat: -38.3685, lon: 145.0205},
-            {id: 57, day: "備選美食", seq: "★", name: "Red Gum BBQ", type: "備選美食", time: "莫寧頓半島", desc: "<b>🍽️ 類型</b>：美式南方手撕豬燒烤<br><b>⭐ 評分</b>：4.2 (2307則)", lat: -38.3690, lon: 145.0200},
-            {id: 58, day: "備選美食", seq: "★", name: "D.O.C Pizza and Deli", type: "備選美食", time: "莫寧頓半島", desc: "<b>🍽️ 類型</b>：道地拿坡里披薩<br><b>⭐ 評分</b>：4.3 (2163則)", lat: -38.2230, lon: 145.0380},
-            {id: 59, day: "備選美食", seq: "★", name: "Pho Thin Australia", type: "備選美食", time: "CBD (黃明推)", desc: "<b>🍽️ 類型</b>：好吃北越蔥爆牛河<br><b>⭐ 評分</b>：4.1 (1905則)", lat: -37.8125, lon: 144.9602},
-            {id: 60, day: "備選美食", seq: "★", name: "Yuk Gam", type: "備選美食", time: "CBD (黃明推)", desc: "<b>🍽️ 類型</b>：高人氣韓式烤肉<br><b>⭐ 評分</b>：4.8 (2580則)", lat: -37.8118, lon: 144.9635},
-            {id: 61, day: "備選美食", seq: "★", name: "Tian38", type: "備選美食", time: "CBD (黃明推)", desc: "<b>🍽️ 類型</b>：新式星馬料理<br><b>⭐ 評分</b>：4.4 (1278則)", lat: -37.8182, lon: 144.9622},
-            {id: 62, day: "備選美食", seq: "★", name: "Soi 38 Melbourne", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：排隊泰式船麵<br><b>⭐ 評分</b>：4.2 (2813則)", lat: -37.8145, lon: 144.9680},
-            {id: 63, day: "備選美食", seq: "★", name: "Supernormal", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：亞洲融合菜/龍蝦刈包<br><b>⭐ 評分</b>：4.5 (5340則)", lat: -37.8155, lon: 144.9695},
-            {id: 64, day: "備選美食", seq: "★", name: "Panda Hot Pot (蜀大侠)", type: "備選美食", time: "Carlton", desc: "<b>🍽️ 類型</b>：超浮誇川味火鍋<br><b>⭐ 評分</b>：4.8 (12575則)", lat: -37.8035, lon: 144.9645},
-            {id: 65, day: "備選美食", seq: "★", name: "ShanDong MaMa", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：招牌鮁魚水餃<br><b>⭐ 評分</b>：4.1 (1463則)", lat: -37.8128, lon: 144.9678},
-            {id: 66, day: "備選美食", seq: "★", name: "Lee Ho Fook", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：摩登精緻中菜<br><b>⭐ 評分</b>：4.5 (623則)", lat: -37.8156, lon: 144.9711},
-            {id: 67, day: "備選美食", seq: "★", name: "Lune Croissanterie", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：世界第一法式可頌<br><b>⭐ 評分</b>：4.3 (4704則)", lat: -37.8140, lon: 144.9670},
-            {id: 68, day: "備選美食", seq: "★", name: "Higher Ground", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：挑高摩登早午餐<br><b>⭐ 評分</b>：4.1 (6154則)", lat: -37.8159, lon: 144.9542},
-            {id: 69, day: "備選美食", seq: "★", name: "The Hardware Société", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：墨爾本經典早午餐<br><b>⭐ 評分</b>：4.4 (4577則)", lat: -37.8126, lon: 144.9605},
-            {id: 70, day: "備選美食", seq: "★", name: "Pellegrini's", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：1954年懷舊義式咖啡<br><b>⭐ 評分</b>：4.4 (2977則)", lat: -37.8115, lon: 144.9725},
-            {id: 71, day: "備選美食", seq: "★", name: "Stalactites Restaurant", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：24H老字號希臘烤肉捲<br><b>⭐ 評分</b>：4.3 (9506則)", lat: -37.8109, lon: 144.9664},
-            {id: 72, day: "備選美食", seq: "★", name: "San Telmo", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：高檔阿根廷烤肉<br><b>⭐ 評分</b>：4.6 (4675則)", lat: -37.8122, lon: 144.9720},
-            {id: 73, day: "備選美食", seq: "★", name: "Reine & La Rue", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：超奢華法式料理<br><b>⭐ 評分</b>：4.5 (1860則)", lat: -37.8166, lon: 144.9610},
-            {id: 74, day: "備選美食", seq: "★", name: "MoVida", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：知名西班牙Tapas<br><b>⭐ 評分</b>：4.5 (2363則)", lat: -37.8164, lon: 144.9690},
-            {id: 75, day: "備選美食", seq: "★", name: "Bratwurst Shop & Co", type: "備選美食", time: "維多利亞市場", desc: "<b>🍽️ 類型</b>：超人氣德國熱狗堡攤<br><b>⭐ 評分</b>：4.4 (527則)", lat: -37.8076, lon: 144.9568},
-            {id: 76, day: "備選美食", seq: "★", name: "Mile End Bagels", type: "備選美食", time: "市區周邊", desc: "<b>🍽️ 類型</b>：柴燒窯烤貝果<br><b>⭐ 評分</b>：4.6 (1193則)", lat: -37.7970, lon: 144.9790},
-            {id: 77, day: "備選美食", seq: "★", name: "HEEBI", type: "備選美食", time: "Carlton", desc: "<b>🍽️ 類型</b>：創意西式早午餐<br><b>⭐ 評分</b>：4.7 (522則)", lat: -37.8028, lon: 144.9638},
-            {id: 78, day: "備選美食", seq: "★", name: "The Mazu Cafe", type: "備選美食", time: "Balwyn", desc: "<b>🍽️ 類型</b>：台式風味簡餐<br><b>⭐ 評分</b>：4.4 (812則)", lat: -37.8105, lon: 145.0802},
-            {id: 79, day: "備選美食", seq: "★", name: "Nosu KBBQ", type: "備選美食", time: "Clayton", desc: "<b>🍽️ 類型</b>：嚴選和牛韓烤<br><b>⭐ 評分</b>：4.9 (97則)", lat: -37.9255, lon: 145.1205}
+            {day: "備選美食", seq: "★", name: "Little Creatures", type: "備選美食", time: "大洋路/Geelong", desc: "<b>🍽️ 類型</b>：啤酒廠/披薩<br><b>⭐ 評分</b>：4.5 (1254則)", lat: -38.1528, lon: 144.3590},
+            {day: "備選美食", seq: "★", name: "Apollo Bay Bakery", type: "備選美食", time: "大洋路", desc: "<b>🍽️ 類型</b>：著名干貝派<br><b>⭐ 評分</b>：4.4 (1844則)", lat: -38.7570, lon: 143.6675},
+            {day: "備選美食", seq: "★", name: "Apollo Bay Distillery", type: "備選美食", time: "大洋路", desc: "<b>🍽️ 類型</b>：蒸餾廠與柴燒披薩<br><b>⭐ 評分</b>：4.5 (426則)", lat: -38.7575, lon: 143.6672},
+            {day: "備選美食", seq: "★", name: "San Remo Fishermans", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：人氣炸魚薯條<br><b>⭐ 評分</b>：4.3 (3490則)", lat: -38.5205, lon: 145.3650},
+            {day: "備選美食", seq: "★", name: "Isola Di Capri", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：老字號義大利菜<br><b>⭐ 評分</b>：4.1 (1662則)", lat: -38.4525, lon: 145.2415},
+            {day: "備選美食", seq: "★", name: "Hotel Phillip Island", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：澳式酒吧與牛排<br><b>⭐ 評分</b>：4.2 (1501則)", lat: -38.4520, lon: 145.2410},
+            {day: "備選美食", seq: "★", name: "COZY ISLAND", type: "備選美食", time: "菲利浦島", desc: "<b>🍽️ 類型</b>：越南河粉/春捲<br><b>⭐ 評分</b>：4.6 (148則)", lat: -38.4530, lon: 145.2420},
+            {day: "備選美食", seq: "★", name: "Meletos", type: "備選美食", time: "亞拉河谷", desc: "<b>🍽️ 類型</b>：莊園景觀餐廳<br><b>⭐ 評分</b>：4.3 (1793則)", lat: -37.7025, lon: 145.3950},
+            {day: "備選美食", seq: "★", name: "The Epicurean", type: "備選美食", time: "莫寧頓半島", desc: "<b>🍽️ 類型</b>：義式窯烤披薩<br><b>⭐ 評分</b>：4.1 (1275則)", lat: -38.3685, lon: 145.0205},
+            {day: "備選美食", seq: "★", name: "Red Gum BBQ", type: "備選美食", time: "莫寧頓半島", desc: "<b>🍽️ 類型</b>：美式南方手撕豬燒烤<br><b>⭐ 評分</b>：4.2 (2307則)", lat: -38.3690, lon: 145.0200},
+            {day: "備選美食", seq: "★", name: "D.O.C Pizza", type: "備選美食", time: "莫寧頓半島", desc: "<b>🍽️ 類型</b>：道地拿坡里披薩<br><b>⭐ 評分</b>：4.3 (2163則)", lat: -38.2230, lon: 145.0380},
+            {day: "備選美食", seq: "★", name: "Pho Thin Australia", type: "備選美食", time: "CBD (黃明志)", desc: "<b>🍽️ 類型</b>：好吃北越蔥爆牛河<br><b>⭐ 評分</b>：4.1 (1905則)", lat: -37.8125, lon: 144.9602},
+            {day: "備選美食", seq: "★", name: "Yuk Gam", type: "備選美食", time: "CBD (黃明志)", desc: "<b>🍽️ 類型</b>：高人氣韓式烤肉<br><b>⭐ 評分</b>：4.8 (2580則)", lat: -37.8118, lon: 144.9635},
+            {day: "備選美食", seq: "★", name: "Tian38", type: "備選美食", time: "CBD (黃明志)", desc: "<b>🍽️ 類型</b>：新式星馬料理<br><b>⭐ 評分</b>：4.4 (1278則)", lat: -37.8182, lon: 144.9622},
+            {day: "備選美食", seq: "★", name: "Soi 38 Melbourne", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：排隊泰式船麵<br><b>⭐ 評分</b>：4.2 (2813則)", lat: -37.8145, lon: 144.9680},
+            {day: "備選美食", seq: "★", name: "Supernormal", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：亞洲融合菜/龍蝦刈包<br><b>⭐ 評分</b>：4.5 (5340則)", lat: -37.8155, lon: 144.9695},
+            {day: "備選美食", seq: "★", name: "Panda Hot Pot", type: "備選美食", time: "Carlton", desc: "<b>🍽️ 類型</b>：超浮誇川味火鍋<br><b>⭐ 評分</b>：4.8 (12575則)", lat: -37.8035, lon: 144.9645},
+            {day: "備選美食", seq: "★", name: "ShanDong MaMa", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：招牌鮁魚水餃<br><b>⭐ 評分</b>：4.1 (1463則)", lat: -37.8128, lon: 144.9678},
+            {day: "備選美食", seq: "★", name: "Lee Ho Fook", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：摩登精緻中菜<br><b>⭐ 評分</b>：4.5 (623則)", lat: -37.8156, lon: 144.9711},
+            {day: "備選美食", seq: "★", name: "Lune Croissanterie", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：世界第一法式可頌<br><b>⭐ 評分</b>：4.3 (4704則)", lat: -37.8140, lon: 144.9670},
+            {day: "備選美食", seq: "★", name: "Higher Ground", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：挑高摩登早午餐<br><b>⭐ 評分</b>：4.1 (6154則)", lat: -37.8159, lon: 144.9542},
+            {day: "備選美食", seq: "★", name: "Hardware Société", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：墨爾本經典早午餐<br><b>⭐ 評分</b>：4.4 (4577則)", lat: -37.8126, lon: 144.9605},
+            {day: "備選美食", seq: "★", name: "Pellegrini's", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：1954年懷舊義式咖啡<br><b>⭐ 評分</b>：4.4 (2977則)", lat: -37.8115, lon: 144.9725},
+            {day: "備選美食", seq: "★", name: "Stalactites", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：24H老字號希臘烤肉捲<br><b>⭐ 評分</b>：4.3 (9506則)", lat: -37.8109, lon: 144.9664},
+            {day: "備選美食", seq: "★", name: "San Telmo", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：高檔阿根廷烤肉<br><b>⭐ 評分</b>：4.6 (4675則)", lat: -37.8122, lon: 144.9720},
+            {day: "備選美食", seq: "★", name: "Reine & La Rue", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：超奢華法式料理<br><b>⭐ 評分</b>：4.5 (1860則)", lat: -37.8166, lon: 144.9610},
+            {day: "備選美食", seq: "★", name: "MoVida", type: "備選美食", time: "CBD", desc: "<b>🍽️ 類型</b>：知名西班牙Tapas<br><b>⭐ 評分</b>：4.5 (2363則)", lat: -37.8164, lon: 144.9690},
+            {day: "備選美食", seq: "★", name: "Bratwurst Shop", type: "備選美食", time: "維多利亞市場", desc: "<b>🍽️ 類型</b>：超人氣德國熱狗堡攤<br><b>⭐ 評分</b>：4.4 (527則)", lat: -37.8076, lon: 144.9568},
+            {day: "備選美食", seq: "★", name: "Mile End Bagels", type: "備選美食", time: "市區周邊", desc: "<b>🍽️ 類型</b>：柴燒窯烤貝果<br><b>⭐ 評分</b>：4.6 (1193則)", lat: -37.7970, lon: 144.9790},
+            {day: "備選美食", seq: "★", name: "HEEBI", type: "備選美食", time: "Carlton", desc: "<b>🍽️ 類型</b>：創意西式早午餐<br><b>⭐ 評分</b>：4.7 (522則)", lat: -37.8028, lon: 144.9638},
+            {day: "備選美食", seq: "★", name: "The Mazu Cafe", type: "備選美食", time: "Balwyn", desc: "<b>🍽️ 類型</b>：台式風味簡餐<br><b>⭐ 評分</b>：4.4 (812則)", lat: -37.8105, lon: 145.0802},
+            {day: "備選美食", seq: "★", name: "Nosu KBBQ", type: "備選美食", time: "Clayton", desc: "<b>🍽️ 類型</b>：嚴選和牛韓烤<br><b>⭐ 評分</b>：4.9 (97則)", lat: -37.9255, lon: 145.1205}
         ];
+
+        // 動態賦予 ID 避免手動編號錯亂
+        locations.forEach((loc, index) => { loc.id = index; });
 
         var parsedLocations = locations.filter(l => l.day !== "備選美食").map(function(loc) {
             var timeParts = loc.time.split(" ");
@@ -358,20 +388,9 @@
 
         var markersMap = {};
         var activeRoutePolyline = null; 
-        var activeRouteTooltip = null; // 儲存車程時間標籤的變數
+        var activeRouteTooltip = null; 
 
-        function getIconForType(type) {
-            switch(type) {
-                case '住宿': return 'fa-house'; // 更新為房屋圖示
-                case '景點': return 'fa-camera';
-                case '餐廳': return 'fa-utensils';
-                case '購物': return 'fa-shopping-bag';
-                case '交通': return 'fa-car';
-                case '備選美食': return 'fa-star';
-                default: return 'fa-map-marker-alt';
-            }
-        }
-
+        // 開啟標記點與動態真實道路路線繪製 (OSRM API)
         function openMarker(id) {
             if (markersMap[id]) {
                 var marker = markersMap[id];
@@ -416,22 +435,36 @@
             setTimeout(function() { jumpToCurrentStop(true); }, 1500);
         };
 
-        function buildSidebar() {
+        // 建立側邊欄，支援過濾 (全部、或僅顯示住宿)
+        function buildSidebar(filterType = 'all') {
             var container = document.getElementById('sidebarList');
+            var title = document.getElementById('sidebarTitle');
             var currentDay = "";
             var html = "";
 
-            locations.forEach(function(loc) {
+            var filteredLocs = locations;
+            if (filterType === 'hotel') {
+                filteredLocs = locations.filter(l => l.type === '住宿');
+                title.innerHTML = "🏨 專屬住宿清單";
+            } else {
+                title.innerHTML = "🗺️ 行程總覽 & 美食";
+            }
+
+            filteredLocs.forEach(function(loc) {
                 if (loc.day !== currentDay) {
                     currentDay = loc.day;
                     var titleColor = currentDay === "備選美食" ? "#e84393" : "#3498db";
                     var icon = currentDay === "備選美食" ? "🍽️" : "📅";
+                    if (filterType === 'hotel') { titleColor = "#8e44ad"; icon = "🏨"; }
                     html += `<div class="sidebar-day-title" style="color:${titleColor}">${icon} ${currentDay}</div>`;
                 }
-                var borderColor = loc.day === "備選美食" ? "#e84393" : "#3498db";
+                var borderColor = loc.day === "備選美食" ? "#e84393" : (loc.type === "住宿" ? "#8e44ad" : "#3498db");
+                
+                var displaySeq = loc.type === "住宿" ? "🏠" : (loc.day === "備選美食" ? "★" : loc.seq);
+                
                 html += `
                     <div class="sidebar-item" style="border-left: 4px solid ${borderColor};" onclick="openMarker(${loc.id})">
-                        <div class="sidebar-item-time">🕒 ${loc.time} ${loc.day !== "備選美食" ? "(站點 "+loc.seq+")" : ""}</div>
+                        <div class="sidebar-item-time">🕒 ${loc.time} (站點 ${displaySeq})</div>
                         <div class="sidebar-item-name">${loc.name}</div>
                         <div class="sidebar-item-desc">${loc.type}</div>
                     </div>
@@ -440,10 +473,29 @@
             container.innerHTML = html;
         }
 
+        // 點擊「🏨 住宿地圖」的專屬功能
+        function jumpToHotelList(btnElement) {
+            var tabs = document.querySelectorAll('.day-tab');
+            tabs.forEach(function(tab) { tab.classList.remove('active'); });
+            btnElement.classList.add('active');
+
+            if (activeRoutePolyline) { map.removeLayer(activeRoutePolyline); activeRoutePolyline = null; }
+            if (activeRouteTooltip) { map.removeLayer(activeRouteTooltip); activeRouteTooltip = null; }
+
+            buildSidebar('hotel');
+            document.getElementById('sidebar').classList.add('open');
+
+            var hotelMarkers = locations.filter(l => l.type === '住宿').map(l => markersMap[l.id]);
+            var group = new L.featureGroup(hotelMarkers);
+            map.flyToBounds(group.getBounds().pad(0.1), {duration: 1.5});
+        }
+
         function jumpToDay(dayName, btnElement) {
             var tabs = document.querySelectorAll('.day-tab');
             tabs.forEach(function(tab) { tab.classList.remove('active'); });
             btnElement.classList.add('active');
+
+            buildSidebar('all'); // 恢復全部列表
 
             var targetLoc = locations.find(function(loc) { return loc.day === dayName; });
             if (targetLoc && markersMap[targetLoc.id]) {
@@ -460,14 +512,20 @@
 
         locations.forEach(function(loc) {
             var color = colors[loc.day] || "#34495e";
-            var faIcon = getIconForType(loc.type);
-            var displaySeq = loc.day === "備選美食" ? `<i class="fas fa-star" style="color:#ffeaa7;"></i>` : loc.seq;
+            
+            // 決定地圖上的標記 Icon 與底色
+            var isHotel = loc.type === "住宿";
+            var isFood = loc.day === "備選美食";
+            
+            var displayIcon = isHotel ? `<i class="fas fa-house" style="color:#fff;"></i>` : (isFood ? `<i class="fas fa-star" style="color:#ffeaa7;"></i>` : loc.seq);
+            var markerBgColor = isHotel ? "#8e44ad" : (isFood ? "#e84393" : color);
+            var headerTypeColor = isHotel ? "#8e44ad" : (isFood ? "#e84393" : "#333");
 
             var markerIcon = L.divIcon({
                 className: 'custom-div-icon',
                 html: `<div class="numbered-marker-container">
-                           <div class="numbered-marker" style='background-color:${color};'>${displaySeq}</div>
-                           <div class="marker-label" style="background: ${loc.day === '備選美食' ? '#e84393' : 'rgba(0,0,0,0.85)'};">${loc.name.substring(0,8)}</div>
+                           <div class="numbered-marker" style='background-color:${markerBgColor};'>${displayIcon}</div>
+                           <div class="marker-label" style="background: ${markerBgColor === '#8e44ad' ? '#732d91' : (isFood ? '#e84393' : 'rgba(0,0,0,0.85)')};">${loc.name.substring(0,8)}</div>
                        </div>`,
                 iconSize: [40, 50], iconAnchor: [20, 25]
             });
@@ -475,32 +533,31 @@
             var marker = L.marker([loc.lat, loc.lon], {icon: markerIcon}).addTo(map);
             markersMap[loc.id] = marker;
             
-            var typeColor = loc.day === "備選美食" ? "#e84393" : "#333";
-            if(loc.type === "餐廳" && loc.day !== "備選美食") typeColor = "#e67e22";
-            if(loc.type === "購物") typeColor = "#e74c3c";
-            if(loc.type === "景點") typeColor = "#27ae60";
-            if(loc.type === "交通" || loc.type === "住宿") typeColor = "#8e44ad";
-
             var prevId = loc.id > 0 ? loc.id - 1 : null;
             var nextId = loc.id < locations.length - 1 ? loc.id + 1 : null;
             var prevBtnHtml = prevId !== null ? `<button class="tour-btn" onclick="openMarker(${prevId})"><i class="fas fa-chevron-left"></i> 上一站</button>` : `<div></div>`;
             var nextBtnHtml = nextId !== null ? `<button class="tour-btn" onclick="openMarker(${nextId})">下一站 <i class="fas fa-chevron-right"></i></button>` : `<div></div>`;
             
-            var searchQuery = encodeURIComponent(loc.name + (loc.day === "備選美食" ? " Melbourne" : ""));
+            var searchQuery = encodeURIComponent(loc.name + (isFood ? " Melbourne" : ""));
             var mapUrl = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
             var navUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lon}`;
             
             var googleActionBtns = `
                 <div class="action-links">
-                    <a href="${mapUrl}" target="_blank" class="nav-btn map-view-btn"><i class="fas fa-store"></i> 評價資訊</a>
-                    <a href="${navUrl}" target="_blank" class="nav-btn nav-dir-btn"><i class="fas fa-location-arrow"></i> 導航去這</a>
+                    <a href="${mapUrl}" target="_blank" class="nav-btn map-view-btn"><i class="fas fa-store"></i> 評價</a>
+                    <a href="${navUrl}" target="_blank" class="nav-btn nav-dir-btn"><i class="fas fa-location-arrow"></i> 導航</a>
                 </div>
             `;
+            
+            // 如果是住宿且有訂房網址，增加專屬訂房按鈕
+            if (isHotel && loc.hotelLink) {
+                googleActionBtns += `<a href="${loc.hotelLink}" target="_blank" class="nav-btn hotel-book-btn"><i class="fas fa-link"></i> 前往訂房網確認</a>`;
+            }
 
             var popupContent = `
                 <div class='popup-header'>
-                    <span class='day-badge' style='background-color:${color}'>${loc.day} ${loc.day !== "備選美食" ? "- 第 "+loc.seq+" 站" : ""}</span>
-                    <span style='font-size: 11px; color: ${typeColor}; font-weight: bold;'><i class="fas ${faIcon}"></i> ${loc.type}</span>
+                    <span class='day-badge' style='background-color:${markerBgColor}'>${loc.day} ${!isFood && !isHotel ? "- 第 "+loc.seq+" 站" : ""}</span>
+                    <span style='font-size: 11px; color: ${headerTypeColor}; font-weight: bold;'>${isHotel ? '<i class="fas fa-house"></i> 住宿' : (isFood ? '<i class="fas fa-star"></i> 備選美食' : loc.type)}</span>
                 </div>
                 <div class='popup-body'>
                     <div style='font-size: 12px; color: #d35400; font-weight: bold; margin-bottom: 4px;'>🕒 ${loc.time}</div>
@@ -512,7 +569,6 @@
             `;
             marker.bindPopup(popupContent);
             
-            // 監聽 Popup 打開事件，動態獲取真實路徑並標示所需時間
             marker.on('popupopen', function() {
                 if (activeRoutePolyline) { map.removeLayer(activeRoutePolyline); activeRoutePolyline = null; }
                 if (activeRouteTooltip) { map.removeLayer(activeRouteTooltip); activeRouteTooltip = null; }
@@ -532,7 +588,6 @@
                                     var coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
                                     activeRoutePolyline = L.polyline(coords, { color: '#e74c3c', weight: 4, className: 'route-line' }).addTo(map);
                                     
-                                    // 計算車程時間
                                     var durationSec = data.routes[0].duration;
                                     var mins = Math.ceil(durationSec / 60);
                                     var timeText = mins > 60 ? Math.floor(mins/60) + " 小時 " + (mins%60) + " 分" : mins + " 分鐘";
@@ -542,7 +597,6 @@
                                         .setLatLng(midPoint)
                                         .setContent("🚗 車程約 " + timeText)
                                         .addTo(map);
-
                                 } else {
                                     activeRoutePolyline = L.polyline([[prevLoc.lat, prevLoc.lon], [loc.lat, loc.lon]], { color: '#e74c3c', weight: 4, className: 'route-line' }).addTo(map);
                                 }
@@ -556,7 +610,7 @@
             });
         });
 
-        buildSidebar();
+        buildSidebar('all');
     </script>
 </body>
 </html>
