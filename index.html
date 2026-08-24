@@ -19,97 +19,103 @@
         html, body { height: 100%; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background: #000; }
         #map { height: 100vh; width: 100vw; z-index: 1; }
         
+        /* 頂部動態行程儀表板 (Smart Dashboard) */
+        .smart-dashboard { position: absolute; top: 0; left: 0; right: 0; z-index: 2000; background: rgba(44, 62, 80, 0.92); color: white; padding: max(15px, env(safe-area-inset-top)) 15px 12px 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); backdrop-filter: blur(10px); cursor: pointer; transition: background 0.2s; }
+        .smart-dashboard:active { background: rgba(52, 73, 94, 0.95); }
+        .dashboard-current { font-weight: bold; font-size: 15px; color: #f1c40f; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+        .dashboard-next { font-size: 12px; color: #ecf0f1; font-weight: 500; }
+        .dashboard-hint { font-size: 10px; color: #95a5a6; margin-top: 6px; }
+
         /* 手機專屬 Popup 優化 */
-        .leaflet-popup-content-wrapper { 
-            font-size: 13px; 
-            border-radius: 16px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
-            width: 85vw; 
-            max-width: 320px; 
-            max-height: 48vh; 
-            overflow-y: auto; 
-            padding: 4px;
-        }
+        .leaflet-popup-content-wrapper { font-size: 13px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 85vw; max-width: 320px; max-height: 55vh; overflow-y: auto; padding: 6px; }
         .popup-header { font-weight: bold; padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
         .day-badge { padding: 3px 8px; border-radius: 6px; color: white; font-size: 11px; font-weight: bold; }
         .popup-body { margin-top: 5px; color: #333; line-height: 1.5; font-size: 12px; }
         .popup-body p { margin: 6px 0; }
         
-        /* 上一步 / 下一步按鈕 */
-        .tour-controls {
-            display: flex; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee; gap: 10px;
-        }
-        .tour-btn {
-            background-color: #2c3e50; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-        }
+        /* 上一步 / 下一步 / 導航 按鈕 */
+        .tour-controls { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee; gap: 8px; }
+        .tour-btn { background-color: #2c3e50; color: white; border: none; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
         .tour-btn:active { background-color: #1a252f; transform: scale(0.98); }
+        
+        .nav-btn { background-color: #27ae60; color: white; text-decoration: none; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; box-sizing: border-box; margin-top: 8px; box-shadow: 0 3px 8px rgba(39, 174, 96, 0.4); }
+        .nav-btn:active { background-color: #219653; transform: scale(0.98); }
 
         /* 地圖標記 */
         .numbered-marker-container { display: flex; flex-direction: column; align-items: center; }
-        .numbered-marker {
-            display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 3px 8px rgba(0,0,0,0.4); color: white; font-weight: bold; font-size: 12px; width: 26px; height: 26px;
-        }
-        .marker-label {
-            background: rgba(0, 0, 0, 0.85); color: white; padding: 1px 5px; font-size: 9px; border-radius: 4px; margin-top: 2px; white-space: nowrap; font-weight: bold;
-        }
+        .numbered-marker { display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 3px 8px rgba(0,0,0,0.4); color: white; font-weight: bold; font-size: 12px; width: 26px; height: 26px; }
+        .marker-label { background: rgba(0, 0, 0, 0.85); color: white; padding: 1px 5px; font-size: 9px; border-radius: 4px; margin-top: 2px; white-space: nowrap; font-weight: bold; }
 
-        /* 右上角控制按鈕群 */
-        .top-right-btns {
-            position: absolute; top: calc(env(safe-area-inset-top, 20px) + 12px); right: 15px; z-index: 1000; display: flex; gap: 8px;
-        }
-        .floating-btn {
-            background: white; border: none; padding: 8px 12px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); font-weight: bold; font-size: 12px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px;
-        }
+        /* 控制按鈕位置下移 (避開儀表板) */
+        .top-right-btns { position: absolute; top: calc(env(safe-area-inset-top, 20px) + 90px); right: 15px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+        .floating-btn { background: white; border: none; padding: 10px 12px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); font-weight: bold; font-size: 12px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
-        /* 圖例面板 */
-        .legend-panel {
-            position: absolute; top: calc(env(safe-area-inset-top, 20px) + 55px); right: 15px; z-index: 1000; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-size: 11px; max-height: 60vh; overflow-y: auto; width: 180px; display: none;
-        }
+        .left-floating-btns { position: absolute; top: calc(env(safe-area-inset-top, 20px) + 90px); left: 10px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
+        .action-btn { background: white; border: none; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3); color: #333; cursor: pointer; font-size: 16px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; transition: all 0.2s; }
+        .action-btn:active { transform: scale(0.9); }
+        .action-btn.rocket { background: #e74c3c; color: white; }
+
+        /* 圖例面板與側邊欄 */
+        .legend-panel { position: absolute; top: calc(env(safe-area-inset-top, 20px) + 135px); right: 15px; z-index: 1000; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-size: 11px; max-height: 50vh; overflow-y: auto; width: 180px; display: none; }
         .legend-panel.show { display: block; }
         .legend-panel h4 { margin: 0 0 6px 0; font-size: 12px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
         .color-box { width: 10px; height: 10px; display: inline-block; margin-right: 6px; border-radius: 3px; vertical-align: middle; }
         .icon-box { display: inline-block; width: 14px; text-align: center; margin-right: 4px; color: #555; }
 
-        /* 去趣風格右側行程列表側邊欄 (Sidebar) */
-        .sidebar {
-            position: absolute; top: 0; right: -320px; width: 300px; height: 100vh; background: #1e1e1e; color: #fff; z-index: 2000; box-shadow: -5px 0 25px rgba(0,0,0,0.5); transition: right 0.3s ease-in-out; display: flex; flex-direction: column;
-        }
+        .sidebar { position: absolute; top: 0; right: -320px; width: 300px; height: 100vh; background: #1e1e1e; color: #fff; z-index: 3000; box-shadow: -5px 0 25px rgba(0,0,0,0.5); transition: right 0.3s ease-in-out; display: flex; flex-direction: column; }
         .sidebar.open { right: 0; }
-        .sidebar-header {
-            padding: 15px 20px; background: #2c2c2c; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3d3d3d; font-weight: bold; font-size: 15px;
-        }
+        .sidebar-header { padding: max(15px, env(safe-area-inset-top)) 20px 15px; background: #2c2c2c; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3d3d3d; font-weight: bold; font-size: 15px; }
         .sidebar-close { background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; }
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 10px; }
-        
-        /* 側邊欄行程卡片 */
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 80px; }
         .sidebar-day-title { font-size: 13px; font-weight: bold; color: #3498db; margin: 12px 5px 6px 5px; text-transform: uppercase; }
-        .sidebar-item {
-            background: #2a2a2a; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; cursor: pointer; border-left: 4px solid #3498db; transition: background 0.2s;
-        }
-        .sidebar-item:hover { background: #353535; }
+        .sidebar-item { background: #2a2a2a; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; cursor: pointer; border-left: 4px solid #3498db; transition: background 0.2s; }
         .sidebar-item-time { font-size: 11px; color: #e67e22; font-weight: bold; margin-bottom: 2px; }
         .sidebar-item-name { font-size: 13px; font-weight: bold; color: #fff; }
         .sidebar-item-desc { font-size: 11px; color: #aaa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* 底部智慧行程快速切換列 */
+        .day-bar { position: absolute; bottom: calc(env(safe-area-inset-bottom, 10px) + 15px); left: 10px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 8px 10px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); display: flex; overflow-x: auto; gap: 6px; scrollbar-width: none; }
+        .day-bar::-webkit-scrollbar { display: none; }
+        .day-tab { background: #f1f2f6; border: none; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; color: #333; white-space: nowrap; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .day-tab.active { background: #2c3e50; color: white; }
+        .day-tab.food-wishlist { background: #ffeaa7; color: #d35400; border: 1px solid #f1c40f; }
+        .day-tab.food-wishlist.active { background: #e84393; color: white; border: 1px solid #e84393; }
     </style>
 </head>
 <body>
+    <!-- 頂部智慧儀表板 -->
+    <div class="smart-dashboard" onclick="jumpToCurrentStop(true)">
+        <div class="dashboard-current" id="dashCurrent"><i class="fas fa-spinner fa-spin"></i> 同步行程中...</div>
+        <div class="dashboard-next" id="dashNext">正在讀取您當下時間</div>
+        <div class="dashboard-hint"><i class="fas fa-hand-pointer"></i> 點擊此處自動鎖定您目前的行程點</div>
+    </div>
+
+    <!-- 右上角控制 -->
     <div class="top-right-btns">
-        <button class="floating-btn" onclick="toggleSidebar()"><i class="fas fa-list-ul"></i> 行程列表</button>
+        <button class="floating-btn" onclick="toggleSidebar()"><i class="fas fa-list-ul"></i> 列表</button>
         <button class="floating-btn" onclick="toggleLegend()"><i class="fas fa-map-signs"></i> 圖例</button>
+    </div>
+
+    <!-- 左側快速操作功能 -->
+    <div class="left-floating-btns">
+        <button class="action-btn gps" id="gpsBtn" onclick="toggleLiveTracking()" title="連續追蹤位置"><i class="fas fa-crosshairs"></i></button>
+        <button class="action-btn" id="mapToggleBtn" onclick="toggleMapType()" title="切換地圖模式"><i class="fas fa-satellite"></i></button>
+        <button class="action-btn rocket" onclick="jumpToCurrentStop(false)" title="跳至目前行程"><i class="fas fa-rocket"></i></button>
     </div>
     
     <!-- 圖例面板 -->
     <div id="legendPanel" class="legend-panel">
         <div style="margin-bottom: 8px;">
             <h4>📌 符號</h4>
+            <span class="icon-box" style="color: #e84393;"><i class="fas fa-star"></i></span> 備選美食清單<br>
             <span class="icon-box"><i class="fas fa-bed"></i></span> 住宿<br>
             <span class="icon-box"><i class="fas fa-camera"></i></span> 景點<br>
-            <span class="icon-box"><i class="fas fa-utensils"></i></span> 美食<br>
-            <span class="icon-box"><i class="fas fa-shopping-bag"></i></span> 購物<br>
+            <span class="icon-box"><i class="fas fa-utensils"></i></span> 行程餐廳<br>
             <span class="icon-box"><i class="fas fa-car"></i></span> 交通<br>
         </div>
         <div>
             <h4>🗓️ 天數顏色</h4>
+            <i class="color-box" style="background: #e84393"></i> 備選口袋美食<br>
             <i class="color-box" style="background: #2c3e50"></i> Base<br>
             <i class="color-box" style="background: #e74c3c"></i> Day 2 (亞拉)<br>
             <i class="color-box" style="background: #3498db"></i> Day 3 (菲利浦)<br>
@@ -122,15 +128,29 @@
         </div>
     </div>
 
-    <!-- 去趣風格側邊欄 -->
+    <!-- 側邊欄 -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <span>🗺️ 墨爾本 11天行程總覽</span>
+            <span>🗺️ 行程總覽 & 美食清單</span>
             <button class="sidebar-close" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
-        <div class="sidebar-content" id="sidebarList">
-            <!-- 動態生成行程清單 -->
-        </div>
+        <div class="sidebar-content" id="sidebarList"></div>
+    </div>
+
+    <!-- 底部天數切換 -->
+    <div class="day-bar" id="dayBar">
+        <button class="day-tab active" onclick="jumpToDay('Base', this)">起終點</button>
+        <button class="day-tab" onclick="jumpToDay('Day 2', this)">Day 2</button>
+        <button class="day-tab" onclick="jumpToDay('Day 3', this)">Day 3</button>
+        <button class="day-tab" onclick="jumpToDay('Day 4', this)">Day 4</button>
+        <button class="day-tab" onclick="jumpToDay('Day 5', this)">Day 5</button>
+        <button class="day-tab" onclick="jumpToDay('Day 6', this)">Day 6</button>
+        <button class="day-tab" onclick="jumpToDay('Day 7', this)">Day 7</button>
+        <button class="day-tab" onclick="jumpToDay('Day 8', this)">Day 8</button>
+        <button class="day-tab" onclick="jumpToDay('Day 9', this)">Day 9</button>
+        <button class="day-tab" onclick="jumpToDay('Day 10', this)">Day 10</button>
+        <button class="day-tab" onclick="jumpToDay('Day 11', this)">Day 11</button>
+        <button class="day-tab food-wishlist" onclick="jumpToDay('備選美食', this)">🍽️ 口袋清單</button>
     </div>
 
     <div id="map"></div>
@@ -154,81 +174,217 @@
         var map = L.map('map', {zoomControl: false}).setView([-38.2, 144.5], 8);
         L.control.zoom({position: 'topleft'}).addTo(map);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19,
-            attribution: '© CARTO'
-        }).addTo(map);
+        // 圖層設定 (預設 Roadmap)
+        var googleHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 20, attribution: '© Google Earth' });
+        var googleRoadmap = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20, attribution: '© Google Maps' });
+        googleRoadmap.addTo(map);
+        var currentLayer = 'roadmap';
+
+        function toggleMapType() {
+            if (currentLayer === 'hybrid') {
+                map.removeLayer(googleHybrid);
+                googleRoadmap.addTo(map);
+                currentLayer = 'roadmap';
+                document.getElementById('mapToggleBtn').innerHTML = '<i class="fas fa-satellite"></i>';
+            } else {
+                map.removeLayer(googleRoadmap);
+                googleHybrid.addTo(map);
+                currentLayer = 'hybrid';
+                document.getElementById('mapToggleBtn').innerHTML = '<i class="fas fa-map"></i>';
+            }
+        }
+
+        // Live Tracking 連續定位功能
+        var userMarker = null;
+        var isTracking = false;
+        
+        function toggleLiveTracking() {
+            var btn = document.getElementById('gpsBtn');
+            if (!isTracking) {
+                if (!navigator.geolocation) { alert("裝置不支援定位"); return; }
+                isTracking = true;
+                btn.style.backgroundColor = '#27ae60';
+                btn.style.color = '#fff';
+                map.locate({setView: true, maxZoom: 15, watch: true, enableHighAccuracy: true});
+            } else {
+                isTracking = false;
+                btn.style.backgroundColor = '#fff';
+                btn.style.color = '#3498db';
+                map.stopLocate();
+            }
+        }
+
+        map.on('locationfound', function(e) {
+            if (!userMarker) {
+                userMarker = L.circleMarker(e.latlng, {
+                    radius: 8, fillColor: "#3498db", color: "#ffffff", weight: 3, opacity: 1, fillOpacity: 0.9
+                }).addTo(map);
+                userMarker.bindPopup("📍 我們現在在這裡！");
+            } else {
+                userMarker.setLatLng(e.latlng);
+            }
+        });
+        map.on('locationerror', function(e) {
+            if(isTracking) {
+                alert("無法取得即時位置，請確認手機位置權限是否開啟！");
+                toggleLiveTracking();
+            }
+        });
 
         var colors = {
-            "Base": "#2c3e50", "Day 2": "#e74c3c", "Day 3": "#3498db",
-            "Day 4": "#2ecc71", "Day 5": "#1abc9c", "Day 6": "#9b59b6",
-            "Day 7": "#e67e22", "Day 8": "#f1c40f", "Day 9": "#34495e",
-            "Day 10": "#34495e", "Day 11": "#34495e"
+            "Base": "#2c3e50", "Day 2": "#e74c3c", "Day 3": "#3498db", "Day 4": "#2ecc71", "Day 5": "#1abc9c", 
+            "Day 6": "#9b59b6", "Day 7": "#e67e22", "Day 8": "#f1c40f", "Day 9": "#34495e", "Day 10": "#34495e", "Day 11": "#34495e", 
+            "備選美食": "#e84393"
         };
 
         var locations = [
-            {id: 0, day: "Base", seq: "1", name: "桃園機場 / 墨爾本機場", type: "交通", time: "9/24 23:30", desc: "<b>特色重點</b>：夜間直飛班機，最高效率串接假期。<br><b>歷史知識</b>：華航直飛班機於隔日 10:40 抵達。", lat: -37.6690, lon: 144.8410},
-            {id: 1, day: "Day 2", seq: "1", name: "Hertz 機場租車", type: "交通", time: "9/25 11:30", desc: "<b>特色重點</b>：完成租車，啟程亞拉河谷。<br><b>注意事項</b>：左駕切換右駕適應。", lat: -37.6700, lon: 144.8500},
-            {id: 2, day: "Day 2", seq: "2", name: "Domaine Chandon 酒莊", type: "景點", time: "9/25 12:30", desc: "<b>特色重點</b>：LVMH集團頂級氣泡酒莊。<br><b>歷史知識</b>：承襲法國傳統瓶中二次發酵工藝。", lat: -37.7188, lon: 145.4052},
-            {id: 3, day: "Day 2", seq: "3", name: "Yarra Valley Chocolaterie", type: "景點", time: "9/25 15:00", desc: "<b>特色重點</b>：免費試吃手工巧克力，品嚐歐式 Gelato。", lat: -37.6950, lon: 145.4300},
-            {id: 4, day: "Day 2", seq: "4", name: "Balgownie Estate", type: "住宿", time: "9/25 17:00", desc: "<b>特色重點</b>：葡萄園美景飯店，熱氣球集合點。", lat: -37.6635, lon: 145.3725},
-            {id: 5, day: "Day 2", seq: "5", name: "Coldstream Brewery", type: "餐廳", time: "9/25 18:30", desc: "<b>特色重點</b>：鄉村啤酒館，品嚐精釀生啤與窯烤披薩。", lat: -37.7020, lon: 145.3900},
-            {id: 6, day: "Day 3", seq: "1", name: "亞拉河谷熱氣球", type: "景點", time: "9/26 05:00", desc: "<b>特色重點</b>：清晨高空俯瞰葡萄園晨曦日出。", lat: -37.6800, lon: 145.3800},
-            {id: 7, day: "Day 3", seq: "2", name: "普芬比利鐵路", type: "景點", time: "9/26 11:00", desc: "<b>特色重點</b>：百年窄軌蒸氣火車，雙腳懸空穿梭雨林。", lat: -37.9090, lon: 145.3565},
-            {id: 8, day: "Day 3", seq: "3", name: "San Remo 炸魚薯條", type: "餐廳", time: "9/26 18:00", desc: "<b>特色重點</b>：入島前享用現炸魚薯條。", lat: -38.5205, lon: 145.3650},
-            {id: 9, day: "Day 3", seq: "4", name: "Cowes 小鎮", type: "住宿", time: "9/26 19:30", desc: "<b>特色重點</b>：菲利浦島大本營（連住兩晚）。", lat: -38.4520, lon: 145.2410},
-            {id: 10, day: "Day 4", seq: "1", name: "亞瑟王座鷹纜車", type: "景點", time: "9/27 09:00", desc: "<b>特色重點</b>：樹冠纜車 360 度鳥瞰海灣。", lat: -38.3530, lon: 144.9540},
-            {id: 11, day: "Day 4", seq: "2", name: "Ashcombe 迷宮花園", type: "景點", time: "9/27 10:30", desc: "<b>特色重點</b>：傳統樹籬迷宮與玫瑰花園。", lat: -38.3600, lon: 144.9100},
-            {id: 12, day: "Day 4", seq: "3", name: "The Epicurean Red Hill", type: "餐廳", time: "9/27 12:00", desc: "<b>特色重點</b>：歷史冷藏庫改建的工業風窯烤餐廳。", lat: -38.3685, lon: 145.0205},
-            {id: 13, day: "Day 4", seq: "4", name: "月光保護區", type: "景點", time: "9/27 14:00", desc: "<b>特色重點</b>：無柵欄空間親手餵食袋鼠。", lat: -38.2045, lon: 145.2530},
-            {id: 14, day: "Day 4", seq: "5", name: "巧克力工廠", type: "景點", time: "9/27 15:30", desc: "<b>特色重點</b>：參觀奇妙製程並品嚐手工巧克力。", lat: -38.4800, lon: 145.1800},
-            {id: 15, day: "Day 4", seq: "6", name: "無尾熊保育中心", type: "景點", time: "9/27 16:30", desc: "<b>特色重點</b>：木棧道平視尤加利樹上的無尾熊。", lat: -38.4900, lon: 145.2200},
-            {id: 16, day: "Day 4", seq: "7", name: "企鵝歸巢", type: "景點", time: "9/27 17:30", desc: "<b>特色重點</b>：夏藍海灘觀看神仙企鵝衝刺返巢。", lat: -38.5080, lon: 145.1480},
-            {id: 17, day: "Day 5", seq: "1", name: "Sorrento 渡輪", type: "交通", time: "9/28 10:00", desc: "<b>特色重點</b>：連人帶車搭乘渡輪橫越海灣。", lat: -38.3375, lon: 144.7435},
-            {id: 18, day: "Day 5", seq: "2", name: "吉朗小鎮", type: "餐廳", time: "9/28 11:30", desc: "<b>特色重點</b>：大洋路前哨站，享用在地午餐。", lat: -38.1499, lon: 144.3617},
-            {id: 19, day: "Day 5", seq: "3", name: "紀念拱門", type: "景點", time: "9/28 13:30", desc: "<b>特色重點</b>：一戰退役老兵徒手開鑿的大洋路起點。", lat: -38.4610, lon: 144.0200},
-            {id: 20, day: "Day 5", seq: "4", name: "阿波羅海灣", type: "住宿", time: "9/28 17:00", desc: "<b>特色重點</b>：大洋路東段迷人海濱中繼站。", lat: -38.7590, lon: 143.6670},
-            {id: 21, day: "Day 6", seq: "1", name: "肯尼特河自然步道", type: "景點", time: "9/29 09:30", desc: "<b>特色重點</b>：野生尤加利樹林尋找無尾熊。", lat: -38.7800, lon: 143.8500},
-            {id: 22, day: "Day 6", seq: "2", name: "奧特威燈塔", type: "景點", time: "9/29 11:30", desc: "<b>特色重點</b>：澳洲大陸現存最古老的燈塔。", lat: -38.8570, lon: 143.5110},
-            {id: 23, day: "Day 6", seq: "3", name: "Timboon 威士忌酒莊", type: "餐廳", time: "9/29 14:00", desc: "<b>特色重點</b>：內陸小鎮品嚐威士忌與甜點。", lat: -38.4800, lon: 142.9780},
-            {id: 24, day: "Day 6", seq: "4", name: "坎貝爾港民宿", type: "住宿", time: "9/29 17:30", desc: "<b>特色重點</b>：採買食材體驗民宿自煮晚餐。", lat: -38.6186, lon: 142.9930},
-            {id: 25, day: "Day 7", seq: "1", name: "十二使徒岩", type: "景點", time: "9/30 08:30", desc: "<b>特色重點</b>：南冰洋侵蝕出的壯麗石灰岩巨柱群。", lat: -38.6660, lon: 143.1040},
-            {id: 26, day: "Day 7", seq: "2", name: "阿德湖峽", type: "景點", time: "9/30 10:00", desc: "<b>特色重點</b>：沉船海岸絕美峽灣。", lat: -38.6470, lon: 143.0700},
-            {id: 27, day: "Day 7", seq: "3", name: "倫敦橋", type: "景點", time: "9/30 11:15", desc: "<b>特色重點</b>：天然海蝕拱門奇觀。", lat: -38.6230, lon: 142.9370},
-            {id: 28, day: "Day 7", seq: "4", name: "疏芬山礦場", type: "景點", time: "9/30 13:30", desc: "<b>特色重點</b>：沉浸式 1850 年代淘金古鎮。", lat: -37.5740, lon: 143.8655},
-            {id: 29, day: "Day 7", seq: "5", name: "巴拉瑞特市區", type: "住宿", time: "9/30 18:00", desc: "<b>特色重點</b>：淘金古城夜宿與晚餐。", lat: -37.5622, lon: 143.8503},
-            {id: 30, day: "Day 8", seq: "1", name: "巴拉瑞特野生動物園", type: "景點", time: "10/1 08:30", desc: "<b>特色重點</b>：近距離接觸澳洲本土動物。", lat: -37.5800, lon: 143.8300},
-            {id: 31, day: "Day 8", seq: "2", name: "威瑞比野生動物園", type: "景點", time: "10/1 11:00", desc: "<b>特色重點</b>：遊園車深入非洲放養草原。", lat: -37.9710, lon: 144.6690},
-            {id: 32, day: "Day 8", seq: "3", name: "市區 Hertz 還車", type: "交通", time: "10/1 15:00", desc: "<b>特色重點</b>：返回 CBD 還車，結束自駕。", lat: -37.8136, lon: 144.9631},
-            {id: 33, day: "Day 9", seq: "1", name: "咖啡一條街", type: "餐廳", time: "10/2 09:00", desc: "<b>特色重點</b>：品嚐世界頂尖 Flat White。", lat: -37.8150, lon: 144.9650},
-            {id: 34, day: "Day 9", seq: "2", name: "費蓮達火車站", type: "景點", time: "10/2 10:00", desc: "<b>特色重點</b>：全澳最古老城市火車站地標。", lat: -37.8183, lon: 144.9671},
-            {id: 35, day: "Day 9", seq: "3", name: "維多利亞州立圖書館", type: "景點", time: "10/2 11:00", desc: "<b>特色重點</b>：八角形穹頂閱覽室。", lat: -37.8105, lon: 144.9646},
-            {id: 36, day: "Day 9", seq: "4", name: "墨爾本動物園", type: "景點", time: "10/2 13:30", desc: "<b>特色重點</b>：澳洲歷史最悠久的經典動物園。", lat: -37.7841, lon: 144.9515},
-            {id: 37, day: "Day 9", seq: "5", name: "DFO & Emporium", type: "購物", time: "10/2 16:00", desc: "<b>特色重點</b>：市區潮流品牌與精品購物商場。", lat: -37.8225, lon: 144.9540},
-            {id: 38, day: "Day 10", seq: "1", name: "維多利亞市場", type: "景點", time: "10/3 09:30", desc: "<b>特色重點</b>：南半球最大露天市場。", lat: -37.8076, lon: 144.9568},
-            {id: 39, day: "Day 10", seq: "2", name: "皇家展覽館", type: "景點", time: "10/3 11:00", desc: "<b>特色重點</b>：世界文化遺產建築。", lat: -37.8044, lon: 144.9715},
-            {id: 40, day: "Day 10", seq: "3", name: "戰爭紀念館", type: "景點", time: "10/3 13:30", desc: "<b>特色重點</b>：希臘神廟風格紀念建築。", lat: -37.8296, lon: 144.9705},
-            {id: 41, day: "Day 10", seq: "4", name: "Spencer Outlet & QV", type: "購物", time: "10/3 15:30", desc: "<b>特色重點</b>：血拼紀念品與在地服飾。", lat: -37.8180, lon: 144.9550},
-            {id: 42, day: "Day 10", seq: "5", name: "墨爾本觀景台", type: "景點", time: "10/3 18:00", desc: "<b>特色重點</b>：88樓俯瞰日落與百萬夜景。", lat: -37.8214, lon: 144.9647},
-            {id: 43, day: "Day 11", seq: "1", name: "聖保羅座堂", type: "景點", time: "10/4 10:00", desc: "<b>特色重點</b>：哥德復興式宏偉大教堂。", lat: -37.8170, lon: 144.9680},
-            {id: 44, day: "Day 11", seq: "2", name: "海洋生物水族館", type: "景點", time: "10/4 11:00", desc: "<b>特色重點</b>：360度海底隧道。", lat: -37.8188, lon: 144.9575},
-            {id: 45, day: "Day 11", seq: "3", name: "南墨爾本市場", type: "餐廳", time: "10/4 12:30", desc: "<b>特色重點</b>：百年市場大啖現開生蠔。", lat: -37.8318, lon: 144.9556},
-            {id: 46, day: "Day 11", seq: "4", name: "布洛克拱廊", type: "景點", time: "10/4 14:30", desc: "<b>特色重點</b>：1892年仿米蘭拱廊的奢華馬賽克長廊。", lat: -37.8143, lon: 144.9650},
-            {id: 47, day: "Day 11", seq: "5", name: "墨爾本機場 / 賦歸", type: "交通", time: "10/4 21:50", desc: "<b>特色重點</b>：搭乘華航直飛班機返回台灣。", lat: -37.6690, lon: 144.8410}
+            // Base ~ Day 11 行程
+            {id: 0, day: "Base", seq: "1", name: "桃園機場 / 墨爾本機場", type: "交通", time: "9/24 23:30", desc: "夜間直飛班機，最高效率串接假期。", lat: -37.6690, lon: 144.8410},
+            {id: 1, day: "Day 2", seq: "1", name: "Hertz 機場租車", type: "交通", time: "9/25 11:30", desc: "完成租車，啟程亞拉河谷。", lat: -37.6700, lon: 144.8500},
+            {id: 2, day: "Day 2", seq: "2", name: "Domaine Chandon 酒莊", type: "景點", time: "9/25 12:30", desc: "LVMH集團頂級氣泡酒莊。", lat: -37.7188, lon: 145.4052},
+            {id: 3, day: "Day 2", seq: "3", name: "Yarra Valley Chocolaterie", type: "景點", time: "9/25 15:00", desc: "免費試吃手工巧克力。", lat: -37.6950, lon: 145.4300},
+            {id: 4, day: "Day 2", seq: "4", name: "Balgownie Estate", type: "住宿", time: "9/25 17:00", desc: "葡萄園美景飯店，熱氣球集合點。", lat: -37.6635, lon: 145.3725},
+            {id: 5, day: "Day 2", seq: "5", name: "Coldstream Brewery", type: "餐廳", time: "9/25 18:30", desc: "鄉村啤酒館，品嚐精釀生啤。", lat: -37.7020, lon: 145.3900},
+            {id: 6, day: "Day 3", seq: "1", name: "亞拉河谷熱氣球", type: "景點", time: "9/26 05:00", desc: "清晨高空俯瞰葡萄園晨曦日出。", lat: -37.6800, lon: 145.3800},
+            {id: 7, day: "Day 3", seq: "2", name: "普芬比利鐵路", type: "景點", time: "9/26 11:00", desc: "百年窄軌蒸氣火車。", lat: -37.9090, lon: 145.3565},
+            {id: 8, day: "Day 3", seq: "3", name: "San Remo 炸魚薯條", type: "餐廳", time: "9/26 18:00", desc: "入島前享用現炸魚薯條。", lat: -38.5205, lon: 145.3650},
+            {id: 9, day: "Day 3", seq: "4", name: "Cowes 小鎮", type: "住宿", time: "9/26 19:30", desc: "菲利浦島大本營。", lat: -38.4520, lon: 145.2410},
+            {id: 10, day: "Day 4", seq: "1", name: "亞瑟王座鷹纜車", type: "景點", time: "9/27 09:00", desc: "樹冠纜車鳥瞰海灣。", lat: -38.3530, lon: 144.9540},
+            {id: 11, day: "Day 4", seq: "2", name: "Ashcombe 迷宮花園", type: "景點", time: "9/27 10:30", desc: "傳統樹籬迷宮與玫瑰花園。", lat: -38.3600, lon: 144.9100},
+            {id: 12, day: "Day 4", seq: "3", name: "The Epicurean Red Hill", type: "餐廳", time: "9/27 12:00", desc: "工業風義式窯烤餐廳。", lat: -38.3685, lon: 145.0205},
+            {id: 13, day: "Day 4", seq: "4", name: "月光保護區", type: "景點", time: "9/27 14:00", desc: "親手餵食袋鼠。", lat: -38.2045, lon: 145.2530},
+            {id: 14, day: "Day 4", seq: "5", name: "巧克力工廠", type: "景點", time: "9/27 15:30", desc: "參觀奇妙製程品嚐巧克力。", lat: -38.4800, lon: 145.1800},
+            {id: 15, day: "Day 4", seq: "6", name: "無尾熊保育中心", type: "景點", time: "9/27 16:30", desc: "木棧道平視無尾熊。", lat: -38.4900, lon: 145.2200},
+            {id: 16, day: "Day 4", seq: "7", name: "企鵝歸巢", type: "景點", time: "9/27 17:30", desc: "夏藍海灘看神仙企鵝返巢。", lat: -38.5080, lon: 145.1480},
+            {id: 17, day: "Day 5", seq: "1", name: "Sorrento 渡輪", type: "交通", time: "9/28 10:00", desc: "搭乘渡輪橫越海灣。", lat: -38.3375, lon: 144.7435},
+            {id: 18, day: "Day 5", seq: "2", name: "吉朗小鎮", type: "餐廳", time: "9/28 11:30", desc: "大洋路前哨站午餐。", lat: -38.1499, lon: 144.3617},
+            {id: 19, day: "Day 5", seq: "3", name: "紀念拱門", type: "景點", time: "9/28 13:30", desc: "大洋路起點打卡。", lat: -38.4610, lon: 144.0200},
+            {id: 20, day: "Day 5", seq: "4", name: "阿波羅海灣", type: "住宿", time: "9/28 17:00", desc: "大洋路東段海濱中繼站。", lat: -38.7590, lon: 143.6670},
+            {id: 21, day: "Day 6", seq: "1", name: "肯尼特河自然步道", type: "景點", time: "9/29 09:30", desc: "尋找野生無尾熊。", lat: -38.7800, lon: 143.8500},
+            {id: 22, day: "Day 6", seq: "2", name: "奧特威燈塔", type: "景點", time: "9/29 11:30", desc: "澳洲最古老燈塔。", lat: -38.8570, lon: 143.5110},
+            {id: 23, day: "Day 6", seq: "3", name: "Timboon 威士忌酒莊", type: "餐廳", time: "9/29 14:00", desc: "品嚐威士忌與甜點。", lat: -38.4800, lon: 142.9780},
+            {id: 24, day: "Day 6", seq: "4", name: "坎貝爾港民宿", type: "住宿", time: "9/29 17:30", desc: "體驗民宿自煮晚餐。", lat: -38.6186, lon: 142.9930},
+            {id: 25, day: "Day 7", seq: "1", name: "十二使徒岩", type: "景點", time: "9/30 08:30", desc: "南冰洋壯麗石灰岩巨柱群。", lat: -38.6660, lon: 143.1040},
+            {id: 26, day: "Day 7", seq: "2", name: "阿德湖峽", type: "景點", time: "9/30 10:00", desc: "沉船海岸絕美峽灣。", lat: -38.6470, lon: 143.0700},
+            {id: 27, day: "Day 7", seq: "3", name: "倫敦橋", type: "景點", time: "9/30 11:15", desc: "天然海蝕拱門奇觀。", lat: -38.6230, lon: 142.9370},
+            {id: 28, day: "Day 7", seq: "4", name: "疏芬山礦場", type: "景點", time: "9/30 13:30", desc: "沉浸式淘金古鎮。", lat: -37.5740, lon: 143.8655},
+            {id: 29, day: "Day 7", seq: "5", name: "巴拉瑞特市區", type: "住宿", time: "9/30 18:00", desc: "淘金古城夜宿。", lat: -37.5622, lon: 143.8503},
+            {id: 30, day: "Day 8", seq: "1", name: "巴拉瑞特野生動物園", type: "景點", time: "10/1 08:30", desc: "接觸澳洲本土動物。", lat: -37.5800, lon: 143.8300},
+            {id: 31, day: "Day 8", seq: "2", name: "威瑞比野生動物園", type: "景點", time: "10/1 11:00", desc: "遊園車深入放養草原。", lat: -37.9710, lon: 144.6690},
+            {id: 32, day: "Day 8", seq: "3", name: "市區 Hertz 還車", type: "交通", time: "10/1 15:00", desc: "返回 CBD 還車，結束自駕。", lat: -37.8136, lon: 144.9631},
+            {id: 33, day: "Day 9", seq: "1", name: "咖啡一條街", type: "餐廳", time: "10/2 09:00", desc: "品嚐世界頂尖 Flat White。", lat: -37.8150, lon: 144.9650},
+            {id: 34, day: "Day 9", seq: "2", name: "費蓮達火車站", type: "景點", time: "10/2 10:00", desc: "最古老城市火車站地標。", lat: -37.8183, lon: 144.9671},
+            {id: 35, day: "Day 9", seq: "3", name: "維多利亞州立圖書館", type: "景點", time: "10/2 11:00", desc: "八角形穹頂閱覽室。", lat: -37.8105, lon: 144.9646},
+            {id: 36, day: "Day 9", seq: "4", name: "墨爾本動物園", type: "景點", time: "10/2 13:30", desc: "最悠久的經典動物園。", lat: -37.7841, lon: 144.9515},
+            {id: 37, day: "Day 9", seq: "5", name: "DFO & Emporium", type: "購物", time: "10/2 16:00", desc: "市區潮流與精品購物。", lat: -37.8225, lon: 144.9540},
+            {id: 38, day: "Day 10", seq: "1", name: "維多利亞市場", type: "景點", time: "10/3 09:30", desc: "南半球最大露天市場。", lat: -37.8076, lon: 144.9568},
+            {id: 39, day: "Day 10", seq: "2", name: "皇家展覽館", type: "景點", time: "10/3 11:00", desc: "世界文化遺產建築。", lat: -37.8044, lon: 144.9715},
+            {id: 40, day: "Day 10", seq: "3", name: "戰爭紀念館", type: "景點", time: "10/3 13:30", desc: "希臘神廟風格紀念建築。", lat: -37.8296, lon: 144.9705},
+            {id: 41, day: "Day 10", seq: "4", name: "Spencer Outlet & QV", type: "購物", time: "10/3 15:30", desc: "血拼紀念品與在地服飾。", lat: -37.8180, lon: 144.9550},
+            {id: 42, day: "Day 10", seq: "5", name: "墨爾本觀景台", type: "景點", time: "10/3 18:00", desc: "88樓俯瞰日落與百萬夜景。", lat: -37.8214, lon: 144.9647},
+            {id: 43, day: "Day 11", seq: "1", name: "聖保羅座堂", type: "景點", time: "10/4 10:00", desc: "哥德復興式宏偉大教堂。", lat: -37.8170, lon: 144.9680},
+            {id: 44, day: "Day 11", seq: "2", name: "海洋生物水族館", type: "景點", time: "10/4 11:00", desc: "360度海底隧道。", lat: -37.8188, lon: 144.9575},
+            {id: 45, day: "Day 11", seq: "3", name: "南墨爾本市場", type: "餐廳", time: "10/4 12:30", desc: "百年市場大啖現開生蠔。", lat: -37.8318, lon: 144.9556},
+            {id: 46, day: "Day 11", seq: "4", name: "布洛克拱廊", type: "景點", time: "10/4 14:30", desc: "仿米蘭拱廊的奢華馬賽克長廊。", lat: -37.8143, lon: 144.9650},
+            {id: 47, day: "Day 11", seq: "5", name: "墨爾本機場 / 賦歸", type: "交通", time: "10/4 21:50", desc: "搭乘直飛班機返回台灣。", lat: -37.6690, lon: 144.8410},
+
+            // 備選美食清單
+            {id: 48, day: "備選美食", seq: "★", name: "HEEBI", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：早午餐與精品咖啡<br><b>✨ 特色</b>：結合亞洲風味的創意西式料理。<br><b>⭐ 評分</b>：4.7 (522則) · Carlton", lat: -37.8028, lon: 144.9638},
+            {id: 49, day: "備選美食", seq: "★", name: "The Mazu Cafe", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：台式/亞洲風味咖啡廳<br><b>✨ 特色</b>：提供懷念的台式小吃與簡餐。<br><b>⭐ 評分</b>：4.4 (812則) · Balwyn", lat: -37.8105, lon: 145.0802},
+            {id: 50, day: "備選美食", seq: "★", name: "Pho Thin Australia", type: "備選美食", time: "黃明志推薦", desc: "<b>🍽️ 餐點</b>：北越風格越南河粉<br><b>✨ 特色</b>：黃明志大推！主打北越河內的蔥爆牛肉河粉。<br><b>⭐ 評分</b>：4.1 (1905則) · CBD", lat: -37.8125, lon: 144.9602},
+            {id: 51, day: "備選美食", seq: "★", name: "Yuk Gam", type: "備選美食", time: "黃明志推薦", desc: "<b>🍽️ 餐點</b>：韓式烤肉與酒館<br><b>✨ 特色</b>：高人氣道地韓式烤肉，適合多人聚餐。<br><b>⭐ 評分</b>：4.8 (2580則) · CBD", lat: -37.8118, lon: 144.9635},
+            {id: 52, day: "備選美食", seq: "★", name: "Tian38", type: "備選美食", time: "黃明志推薦", desc: "<b>🍽️ 餐點</b>：現代中式/星馬料理<br><b>✨ 特色</b>：將傳統中式與星馬風味融合的摩登餐酒館。<br><b>⭐ 評分</b>：4.4 (1278則) · CBD", lat: -37.8182, lon: 144.9622},
+            {id: 53, day: "備選美食", seq: "★", name: "Higher Ground", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：摩登澳式早午餐<br><b>✨ 特色</b>：舊發電廠改建打卡名店，必點招牌熱蛋糕。<br><b>⭐ 評分</b>：4.1 (6154則) · 南十字星旁", lat: -37.8159, lon: 144.9542},
+            {id: 54, day: "備選美食", seq: "★", name: "Foglia di Fico", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：正宗義大利料理<br><b>✨ 特色</b>：手工義大利麵與傳統義式燉肉。<br><b>⭐ 評分</b>：4.7 (869則) · CBD", lat: -37.8131, lon: 144.9525},
+            {id: 55, day: "備選美食", seq: "★", name: "Nosu KBBQ", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：頂級韓式烤肉<br><b>✨ 特色</b>：嚴選和牛與厚切豬五花，配菜豐盛。<br><b>⭐ 評分</b>：4.9 (97則) · Clayton", lat: -37.9255, lon: 145.1205},
+            {id: 56, day: "備選美食", seq: "★", name: "Lagotto", type: "備選美食", time: "推薦清單", desc: "<b>🍽️ 餐點</b>：義式餐酒館與早午餐<br><b>✨ 特色</b>：高水準手工義大利麵與精選葡萄酒。<br><b>⭐ 評分</b>：4.7 (661則) · Fitzroy North", lat: -37.7885, lon: 144.9852}
         ];
 
+        // 將時間字串轉為日期物件以便儀表板比對
+        var parsedLocations = locations.filter(l => l.day !== "備選美食").map(function(loc) {
+            var timeParts = loc.time.split(" ");
+            var md = timeParts[0].split("/");
+            var hm = timeParts[1].split(":");
+            return { ...loc, dateObj: new Date(2026, parseInt(md[0]) - 1, parseInt(md[1]), parseInt(hm[0]), parseInt(hm[1])) };
+        });
+
+        // 更新頂部智慧儀表板
+        function updateDashboard() {
+            var now = new Date();
+            var currentLoc = null;
+            var nextLoc = null;
+
+            for(var i=0; i<parsedLocations.length; i++) {
+                if (parsedLocations[i].dateObj > now) {
+                    nextLoc = parsedLocations[i];
+                    currentLoc = i > 0 ? parsedLocations[i-1] : null;
+                    break;
+                }
+            }
+
+            var dashCurrent = document.getElementById('dashCurrent');
+            var dashNext = document.getElementById('dashNext');
+
+            if (!nextLoc && !currentLoc) {
+                dashCurrent.innerHTML = "📍 行程已圓滿結束！";
+                dashNext.innerHTML = "期待下一次的旅行 ✈️";
+            } else if (!currentLoc) {
+                dashCurrent.innerHTML = "📍 行程尚未開始";
+                dashNext.innerHTML = "🔜 第一站：" + nextLoc.time + " " + nextLoc.name;
+            } else {
+                dashCurrent.innerHTML = `📍 目前：${currentLoc.name}`;
+                dashNext.innerHTML = `🔜 下一站：${nextLoc.time} ${nextLoc.name}`;
+            }
+        }
+        setInterval(updateDashboard, 60000); // 每分鐘更新一次儀表板
+        updateDashboard();
+
         var markersMap = {};
+
+        function getIconForType(type) {
+            switch(type) {
+                case '住宿': return 'fa-bed';
+                case '景點': return 'fa-camera';
+                case '餐廳': return 'fa-utensils';
+                case '購物': return 'fa-shopping-bag';
+                case '交通': return 'fa-car';
+                case '備選美食': return 'fa-star';
+                default: return 'fa-map-marker-alt';
+            }
+        }
 
         function openMarker(id) {
             if (markersMap[id]) {
                 var marker = markersMap[id];
-                map.flyTo(marker.getLatLng(), 14, {duration: 1.2});
+                map.flyTo(marker.getLatLng(), 15, {duration: 1.2});
                 marker.openPopup();
-                document.getElementById('sidebar').classList.remove('open'); // 點擊後自動收合側邊欄
+                document.getElementById('sidebar').classList.remove('open');
             }
         }
 
-        // 動態生成側邊欄行程清單
+        // 智慧跳轉 (無縫版：支援一鍵開啟自動飛躍)
+        function jumpToCurrentStop(silent = false) {
+            var now = new Date();
+            var targetId = 0;
+            var minDiff = Infinity;
+            
+            parsedLocations.forEach(function(loc) {
+                var diff = Math.abs(loc.dateObj - now);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    targetId = loc.id;
+                }
+            });
+            
+            if (!silent) alert("為您定位至當下行程點！");
+            openMarker(targetId);
+        }
+
+        // 開啟 App 1.5 秒後自動飛躍至目前行程
+        window.onload = function() {
+            setTimeout(function() { jumpToCurrentStop(true); }, 1500);
+        };
+
         function buildSidebar() {
             var container = document.getElementById('sidebarList');
             var currentDay = "";
@@ -237,11 +393,14 @@
             locations.forEach(function(loc) {
                 if (loc.day !== currentDay) {
                     currentDay = loc.day;
-                    html += `<div class="sidebar-day-title">📅 ${currentDay}</div>`;
+                    var titleColor = currentDay === "備選美食" ? "#e84393" : "#3498db";
+                    var icon = currentDay === "備選美食" ? "🍽️" : "📅";
+                    html += `<div class="sidebar-day-title" style="color:${titleColor}">${icon} ${currentDay}</div>`;
                 }
+                var borderColor = loc.day === "備選美食" ? "#e84393" : "#3498db";
                 html += `
-                    <div class="sidebar-item" onclick="openMarker(${loc.id})">
-                        <div class="sidebar-item-time">🕒 ${loc.time} (站點 ${loc.seq})</div>
+                    <div class="sidebar-item" style="border-left: 4px solid ${borderColor};" onclick="openMarker(${loc.id})">
+                        <div class="sidebar-item-time">🕒 ${loc.time} ${loc.day !== "備選美食" ? "(站點 "+loc.seq+")" : ""}</div>
                         <div class="sidebar-item-name">${loc.name}</div>
                         <div class="sidebar-item-desc">${loc.type}</div>
                     </div>
@@ -250,53 +409,69 @@
             container.innerHTML = html;
         }
 
+        function jumpToDay(dayName, btnElement) {
+            var tabs = document.querySelectorAll('.day-tab');
+            tabs.forEach(function(tab) { tab.classList.remove('active'); });
+            btnElement.classList.add('active');
+
+            var targetLoc = locations.find(function(loc) { return loc.day === dayName; });
+            if (targetLoc && markersMap[targetLoc.id]) {
+                var marker = markersMap[targetLoc.id];
+                var zoomLevel = dayName === '備選美食' ? 12 : 11;
+                map.flyTo(marker.getLatLng(), zoomLevel, {duration: 1.5});
+                marker.openPopup();
+            }
+        }
+
         locations.forEach(function(loc) {
             var color = colors[loc.day] || "#34495e";
+            var faIcon = getIconForType(loc.type);
+            var displaySeq = loc.day === "備選美食" ? `<i class="fas fa-star" style="color:#ffeaa7;"></i>` : loc.seq;
+
             var markerIcon = L.divIcon({
                 className: 'custom-div-icon',
                 html: `<div class="numbered-marker-container">
-                           <div class="numbered-marker" style='background-color:${color};'>${loc.seq}</div>
-                           <div class="marker-label">${loc.day}</div>
+                           <div class="numbered-marker" style='background-color:${color};'>${displaySeq}</div>
+                           <div class="marker-label" style="background: ${loc.day === '備選美食' ? '#e84393' : 'rgba(0,0,0,0.85)'};">${loc.name.substring(0,6)}</div>
                        </div>`,
-                iconSize: [36, 44], iconAnchor: [18, 22]
+                iconSize: [40, 50], iconAnchor: [20, 25]
             });
 
             var marker = L.marker([loc.lat, loc.lon], {icon: markerIcon}).addTo(map);
             markersMap[loc.id] = marker;
             
-            var typeColor = "#333";
-            if(loc.type === "餐廳") typeColor = "#e67e22";
+            var typeColor = loc.day === "備選美食" ? "#e84393" : "#333";
+            if(loc.type === "餐廳" && loc.day !== "備選美食") typeColor = "#e67e22";
             if(loc.type === "購物") typeColor = "#e74c3c";
             if(loc.type === "景點") typeColor = "#27ae60";
             if(loc.type === "交通" || loc.type === "住宿") typeColor = "#8e44ad";
 
             var prevId = loc.id > 0 ? loc.id - 1 : null;
             var nextId = loc.id < locations.length - 1 ? loc.id + 1 : null;
-            var prevBtnHtml = prevId !== null ? `<button class="tour-btn" onclick="openMarker(${prevId})"><i class="fas fa-chevron-left"></i> 上一步</button>` : `<div></div>`;
-            var nextBtnHtml = nextId !== null ? `<button class="tour-btn" onclick="openMarker(${nextId})">下一步 <i class="fas fa-chevron-right"></i></button>` : `<div></div>`;
+            var prevBtnHtml = prevId !== null ? `<button class="tour-btn" onclick="openMarker(${prevId})"><i class="fas fa-chevron-left"></i> 上一站</button>` : `<div></div>`;
+            var nextBtnHtml = nextId !== null ? `<button class="tour-btn" onclick="openMarker(${nextId})">下一站 <i class="fas fa-chevron-right"></i></button>` : `<div></div>`;
+            
+            // 一鍵 Google Maps 導航按鈕
+            var navUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lon}`;
+            var navBtnHtml = `<a href="${navUrl}" target="_blank" class="nav-btn"><i class="fas fa-location-arrow"></i> 開啟 Google Maps 導航</a>`;
 
             var popupContent = `
                 <div class='popup-header'>
-                    <span class='day-badge' style='background-color:${color}'>${loc.day} - 第 ${loc.seq} 站</span>
-                    <span style='font-size: 11px; color: ${typeColor}; font-weight: bold;'>${loc.type}</span>
+                    <span class='day-badge' style='background-color:${color}'>${loc.day} ${loc.day !== "備選美食" ? "- 第 "+loc.seq+" 站" : ""}</span>
+                    <span style='font-size: 11px; color: ${typeColor}; font-weight: bold;'><i class="fas ${faIcon}"></i> ${loc.type}</span>
                 </div>
                 <div class='popup-body'>
                     <div style='font-size: 12px; color: #d35400; font-weight: bold; margin-bottom: 4px;'>🕒 ${loc.time}</div>
                     <b style='font-size: 14px; color: #222;'>${loc.name}</b>
                     <p>${loc.desc}</p>
                     <div class='tour-controls'>${prevBtnHtml}${nextBtnHtml}</div>
+                    ${navBtnHtml}
                 </div>
             `;
             marker.bindPopup(popupContent);
         });
 
-        // 初始化側邊欄
         buildSidebar();
-
-        // 預設全覽
-        var allMarkers = Object.values(markersMap);
-        var group = new L.featureGroup(allMarkers);
-        map.fitBounds(group.getBounds().pad(0.1));
     </script>
 </body>
 </html>
